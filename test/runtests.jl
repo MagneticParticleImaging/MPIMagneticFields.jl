@@ -1,6 +1,11 @@
-using MagneticFields
+using MPIMagneticFields
 using Test
+using Aqua
 
-@testset "MagneticFields.jl" begin
-    # Write your tests here.
+@testset "MPIMagneticFields.jl" begin
+  @testset "Aqua" begin
+    Aqua.test_all(MPIMagneticFields, ambiguities=false)
+  end
+
+
 end
