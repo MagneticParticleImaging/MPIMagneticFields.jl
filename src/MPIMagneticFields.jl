@@ -1,4 +1,4 @@
-module MagneticFields
+module MPIMagneticFields
 
 # Write your package code here.
 
