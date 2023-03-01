@@ -17,7 +17,7 @@ Abstract supertype for magnetic fields.
 
 The type is defined by `T`, the number of dimensions by `N` and the vector field dimension by `M`.
 """
-abstract type AbstractMagneticField{T, N, M} <: AbstractArray{T, N} end
+abstract type AbstractMagneticField{T, N, M} where {T <: Integer, N <: Integer, M <: Integer}
 
 #Base.size(S::SquaresVector) = (S.count,)
 Base.IndexStyle(::Type{<:AbstractMagneticField}) = IndexCartesian()
