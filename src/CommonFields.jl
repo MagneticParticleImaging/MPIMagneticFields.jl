@@ -1,5 +1,5 @@
 
-struct IdealFFP{GT, T, N, M} <: AbstractMagneticField{T, N, M} where {GT <: Number, T <: Number, N <: Integer, M <: Integer}
+mutable struct IdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
   gradient::GT
 end
 
@@ -10,41 +10,45 @@ gradientFieldType(::IdealFFP) = FFPGradientField()
 
 value(field::IdealFFP, r) = r.*field.gradient
 
-
-
-
-struct IdealFFL{GT, T, N, M} <: AbstractMagneticField{T, N, M} where {GT <: Number, T <: Number, N <: Integer, M <: Integer}
+mutable struct IdealXYFFL{GT} <: AbstractMagneticField where {GT <: Number}
   gradient::GT
+  ϕ::Float64
 end
 
-fieldType(::IdealFFL) = GradientField()
-definitionType(::IdealFFL) = MethodBasedFieldDefinition()
-timeDependencyType(::IdealFFL) = TimeConstant()
-gradientFieldType(::IdealFFL) = FFLGradientField()
+fieldType(::IdealXYFFL) = GradientField()
+definitionType(::IdealXYFFL) = MethodBasedFieldDefinition()
+timeDependencyType(::IdealXYFFL) = TimeConstant()
+gradientFieldType(::IdealXYFFL) = FFLGradientField()
+fieldMovementType(::IdealXYFFL) = RotationalMovement()
 
-value(field::IdealFFL, r, ϕ) = [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1]*r.*field.gradient
+value(field::IdealXYFFL, r) = [-sin(field.ϕ)^2 -sin(field.ϕ)*cos(field.ϕ) 0; -sin(field.ϕ)*cos(field.ϕ) -cos(field.ϕ)^2 0; 0 0 1]*r.*field.gradient
+rotate!(field::IdealXYFFL, ϕ) = field.ϕ = ϕ
 
+mutable struct IdealHomogeneousField{T, U} <: AbstractMagneticField where {T <: Number, U <: Number}
+  amplitude::T
+  direction::Vector{U}
+end
 
+fieldType(::IdealHomogeneousField) = HomogeneousField()
+definitionType(::IdealHomogeneousField) = MethodBasedFieldDefinition()
+timeDependencyType(::IdealHomogeneousField) = TimeConstant()
+fieldMovementType(::IdealHomogeneousField) = NoMovement()
 
+value(field::IdealHomogeneousField, r) = normalize(field.direction).*field.amplitude
 
+# TODO: Define other combinations
+mutable struct IdealXYRotatedHomogeneousField{T} <: AbstractMagneticField where {T <: Number}
+  amplitude::T
+  ϕ::Float64
+end
 
-# B_FFL(ϕ::T, r::U, gradient::Real) where {T <: Real, V <: Real, U <: SVector{3, V}} = [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1]*r.*gradient
-# B_FFL(ϕ::T, r::U, gradient::Real) where {T <: Real, V <: Real, U <: SVector{2, V}} = B_FFL(ϕ, SVector(r..., zero(eltype(r))), gradient)
+fieldType(::IdealXYRotatedHomogeneousField) = HomogeneousField()
+definitionType(::IdealXYRotatedHomogeneousField) = MethodBasedFieldDefinition()
+timeDependencyType(::IdealXYRotatedHomogeneousField) = TimeConstant()
+fieldMovementType(::IdealXYRotatedHomogeneousField) = RotationalMovement()
 
-# B_rot(ϕ::T, r::U, amplitude::W) where {T <: Real, V <: Unitful.Length, U <: SVector{3, V}, W <: Unitful.BField} = [sin(ϕ), cos(ϕ), 0].*amplitude
-# B_rot(ϕ::T, r::U, amplitude::W) where {T <: Real, V <: Unitful.Length, U <: SVector{2, V}, W <: Unitful.BField} = B_rot(ϕ, SVector{3}(r..., zero(eltype(r))), amplitude)
-
-# B_rot(ϕ::T, r::U, amplitude::W) where {T <: Real, V <: Real, U <: SVector{3, V}, W <: Real} = [sin(ϕ), cos(ϕ), 0].*amplitude
-# B_rot(ϕ::T, r::U, amplitude::W) where {T <: Real, V <: Real, U <: SVector{2, V}, W <: Real} = B_rot(ϕ, SVector{3}(r..., zero(eltype(r))), amplitude)
-
-# B_DF(ϕ::T, r::U, amplitude::W, direction=[0, 0, 1]) where {T <: Real, V <: Unitful.Length, U <: SVector{3, V}, W <: Unitful.BField} = SVector{3}(direction.*amplitude)
-# #B_DF(ϕ::T, r::U, amplitude::W) where {T <: Real, V <: Unitful.Length, U <: SVector{2, V}, W <: Unitful.BField} = B_rot(ϕ, SVector{3}(r..., zero(eltype(r))), amplitude)
-
-# #B_slow(ϕ, r, FF_amplitude, FFL_gradient) = B_FFL(ϕ, r, FFL_gradient) .+ B_rot(ϕ, r, FF_amplitude)
-# B(ϕ, r, DF_amplitude, FF_amplitude, FFL_gradient) = B_DF(ϕ, r, DF_amplitude) .+ B_slow(ϕ, r, FF_amplitude, FFL_gradient)
-
-
-
+value(field::IdealXYRotatedHomogeneousField, r) = [sin(field.ϕ), cos(field.ϕ), 0].*field.amplitude
+rotate!(field::IdealXYRotatedHomogeneousField, ϕ) = field.ϕ = ϕ
 
 # # TODO: This should be externalized
 

@@ -29,4 +29,14 @@ abstract type GradientFieldType end
 struct FFPGradientField <: GradientFieldType end
 struct FFLGradientField <: GradientFieldType end
 
-gradientFieldType(field::AbstractMagneticField) = fieldType(field) isa GradientField ? @error "Not yet implemented" : nothing
+gradientFieldType(field::AbstractMagneticField) = fieldType(field) isa GradientField ? (@error "Not yet implemented") : nothing
+
+abstract type FieldMovementType end
+struct NoMovement <: FieldMovementType end
+struct RotationalMovement <: FieldMovementType end
+struct TranslationalMovement <: FieldMovementType end
+
+fieldMovementType(::AbstractMagneticField)::FieldMovementType = NoMovement() # Default
+
+isRotatable(field::AbstractMagneticField) = fieldMovementType(field) isa RotationalMovement
+isTranslatable(field::AbstractMagneticField) = fieldMovementType(field) isa TranslationalMovement
