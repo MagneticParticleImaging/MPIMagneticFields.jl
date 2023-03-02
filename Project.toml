@@ -4,8 +4,10 @@ authors = ["Marija Boberg <m.boberg@uke.de> and contributors"]
 version = "0.0.0"
 
 [deps]
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 
 [compat]
+DocStringExtensions = "0.9"
 julia = "1"
 
 [extras]
