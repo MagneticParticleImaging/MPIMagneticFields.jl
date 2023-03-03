@@ -1,3 +1,4 @@
+export SuperimposedField
 """
     $(TYPEDEF)
 
@@ -14,6 +15,7 @@ fieldType(field::Type{SuperimposedField}) = fieldType(field.fieldA) == fieldType
 definitionType(field::Type{SuperimposedField}) = definitionType(field.fieldA) == definitionType(field.fieldB) ? definitionType(field.fieldA) : MixedFieldDefinition()
 timeDependencyType(field::Type{SuperimposedField}) = isTimeVarying(field.fieldA) && isTimeVarying(field.fieldB) ? TimeConstant() : TimeVarying()
 
+export superimpose
 superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = SuperimposedField(fieldA, fieldB)
 
 value(field::SuperimposedField, r) = value(field.fieldA, r) + value(field.fieldB, r)
@@ -55,6 +57,7 @@ definitionType(::Type{NegativeField}) = definitionType(field.field)
 timeDependencyType(::Type{NegativeField}) = timeDependencyType(field.field)
 gradientFieldType(::Type{NegativeField}) = gradientFieldType(field.field)
 
+export negative
 negative(field::AbstractMagneticField) = NegativeField(field)
 
 value(field::NegativeField, r) = .-value(field.field, r)
