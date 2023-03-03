@@ -1,3 +1,4 @@
+export FieldType, GradientField, HomogeneousField, ExcitationField, MixedField, OtherField
 abstract type FieldType end
 struct GradientField <: FieldType end
 struct HomogeneousField <: FieldType end
@@ -5,8 +6,12 @@ struct ExcitationField <: FieldType end
 struct MixedField <: FieldType end
 struct OtherField <: FieldType end
 
+export fieldType
 fieldType(::AbstractMagneticField)::FieldType = @error "Not yet implemented"
 
+export FieldDefinitionType, EquationBasedFieldDefinition, DataBasedFieldDefinition,
+       MethodBasedFieldDefinition, SymbolicBasedFieldDefinition, CartesianDataBasedFieldDefinition,
+       SphericalHarmonicsDataBasedFieldDefinition, MixedFieldDefinition
 abstract type FieldDefinitionType end
 abstract type EquationBasedFieldDefinition <: FieldDefinitionType end
 abstract type DataBasedFieldDefinition <: FieldDefinitionType end
@@ -16,6 +21,7 @@ struct CartesianDataBasedFieldDefinition <: DataBasedFieldDefinition end
 struct SphericalHarmonicsDataBasedFieldDefinition <: DataBasedFieldDefinition end
 struct MixedFieldDefinition <: FieldDefinitionType end
 
+export definitionType
 definitionType(::AbstractMagneticField)::FieldDefinitionType = @error "Not yet implemented"
 
 abstract type FieldTimeDependencyType end

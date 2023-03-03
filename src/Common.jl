@@ -1,5 +1,6 @@
 #Base.size(S::SquaresVector) = (S.count,)
 Base.IndexStyle(::Type{<:AbstractMagneticField}) = IndexCartesian()
-Base.getindex(mf::FT, i) where FT <: AbstractMagneticField = getindex(definitionType(typeof(mf)), i)
+Base.getindex(field::AbstractMagneticField, r...) = value(field, [r...])
 
-LinearAlgebra.norm(field::FT) where FT <: AbstractMagneticField = [norm(field[i]) for i ∈ eachindex(field)]
+# TODO: This only works with eachindex() available, which is only the case for fields defining a grid. How shall we solve this? Create a container?
+LinearAlgebra.norm(field::AbstractMagneticField) = [norm(field[i]) for i ∈ eachindex(field)]
