@@ -49,28 +49,3 @@ fieldMovementType(::IdealXYRotatedHomogeneousField) = RotationalMovement()
 
 value(field::IdealXYRotatedHomogeneousField, r) = [sin(field.ϕ), cos(field.ϕ), 0].*field.amplitude
 rotate!(field::IdealXYRotatedHomogeneousField, ϕ) = field.ϕ = ϕ
-
-# # TODO: This should be externalized
-
-# mutable struct KolibriGradientField{T, N, M} <: AbstractMagneticField{T, N, M}
-#   gradient::typeof(1.0u"T/m")
-#   equation::Function
-#   grid::RegularGridDefinition  
-# end
-
-# function KolibriGradientField(gradient = 5.0u"T/m", equation = nothing)
-#   if isnothing(equation)
-#     equation = (x, t) -> [0, 0, x[2]] # TODO: Specialize for M
-#   end
-
-#   return KolibriGradientField{Unitful.BField, 3, 3}(gradient, equation, RegularGridDefinition())
-# end
-
-# fieldType(::Type{KolibriGradientField}) = GradientField()
-# gradientFieldType(::Type{KolibriGradientField}) = FFLGradientField()
-# definitionType(::Type{KolibriGradientField}) = EquationBasedFieldDefinition()
-# timeDependencyType(::Type{KolibriGradientField}) = TimeVarying()
-
-# gradient(field::KolibriGradientField) = field.gradient
-
-# Base.size(field::KolibriGradientField) = shape(grid)
