@@ -69,4 +69,4 @@ import Base.+, Base.-
 
 (+)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = superimpose(fieldA, fieldB)
 (-)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = superimpose(fieldA, -fieldB)
-(-)(field::AbstractMagneticField) where {T <: AbstractMagneticField} = negative(field)
+(-)(field::AbstractMagneticField) = negative(field)
