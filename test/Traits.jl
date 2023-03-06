@@ -3,10 +3,10 @@
 
   testField = TestField()
 
-  @test_throws "Not yet implemented" fieldType(testField)
-  @test_throws "Not yet implemented" definitionType(testField)
-  @test_throws "Not yet implemented" timeDependencyType(testField)
-  @test_throws "Not yet implemented" gradientFieldType(testField)
+  @test_throws ErrorException("Not yet implemented") fieldType(testField)
+  @test_throws ErrorException("Not yet implemented") definitionType(testField)
+  @test_throws ErrorException("Not yet implemented") timeDependencyType(testField)
+  @test_throws ErrorException("Not yet implemented") gradientFieldType(testField)
 
   mutable struct TestFieldImplemented <: AbstractMagneticField end
 
