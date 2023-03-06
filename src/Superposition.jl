@@ -11,9 +11,9 @@ struct SuperimposedField <: AbstractMagneticField
   fieldB::AbstractMagneticField
 end
 
-fieldType(field::Type{SuperimposedField}) = fieldType(field.fieldA) == fieldType(field.fieldB) ? fieldType(field.fieldA) : MixedField()
-definitionType(field::Type{SuperimposedField}) = definitionType(field.fieldA) == definitionType(field.fieldB) ? definitionType(field.fieldA) : MixedFieldDefinition()
-timeDependencyType(field::Type{SuperimposedField}) = isTimeVarying(field.fieldA) && isTimeVarying(field.fieldB) ? TimeConstant() : TimeVarying()
+fieldType(field::SuperimposedField) = fieldType(field.fieldA) == fieldType(field.fieldB) ? fieldType(field.fieldA) : MixedField()
+definitionType(field::SuperimposedField) = definitionType(field.fieldA) == definitionType(field.fieldB) ? definitionType(field.fieldA) : MixedFieldDefinition()
+timeDependencyType(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB) ? TimeVarying() : TimeConstant()
 
 export superimpose
 superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = SuperimposedField(fieldA, fieldB)
@@ -52,10 +52,10 @@ struct NegativeField <: AbstractMagneticField
   field::AbstractMagneticField
 end
 
-fieldType(::Type{NegativeField}) = fieldType(field.field)
-definitionType(::Type{NegativeField}) = definitionType(field.field)
-timeDependencyType(::Type{NegativeField}) = timeDependencyType(field.field)
-gradientFieldType(::Type{NegativeField}) = gradientFieldType(field.field)
+fieldType(field::NegativeField) = fieldType(field.field)
+definitionType(field::NegativeField) = definitionType(field.field)
+timeDependencyType(field::NegativeField) = timeDependencyType(field.field)
+gradientFieldType(field::NegativeField) = gradientFieldType(field.field)
 
 export negative
 negative(field::AbstractMagneticField) = NegativeField(field)
