@@ -9,7 +9,7 @@
   MPIMagneticFields.timeDependencyType(::TestIdealHomogeneousField) = TimeConstant()
   MPIMagneticFields.fieldMovementType(::TestIdealHomogeneousField) = NoMovement()
 
-  MPIMagneticFields.value(field::TestIdealHomogeneousField, r) = normalize(field.direction).*field.amplitude
+  MPIMagneticFields.value(field::TestIdealHomogeneousField, ::PT) where {T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude
 
   fieldA = TestIdealHomogeneousField(1, [1, 0, 0])
   fieldB = TestIdealHomogeneousField(1, [0, 1, 0])

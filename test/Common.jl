@@ -10,8 +10,8 @@
     MPIMagneticFields.timeDependencyType(::TestIdealHomogeneousField) = TimeConstant()
     MPIMagneticFields.fieldMovementType(::TestIdealHomogeneousField) = NoMovement()
 
-    MPIMagneticFields.value(field::TestIdealHomogeneousField, r) = normalize(field.direction).*field.amplitude
-
+    MPIMagneticFields.value(field::TestIdealHomogeneousField, ::PT) where {T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude
+    
     field = TestIdealHomogeneousField(1, [1, 0, 0])
     
     @test all(field[1, 0, 0] .≈ [1, 0, 0])
