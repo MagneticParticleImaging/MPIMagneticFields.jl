@@ -1,7 +1,8 @@
 
+# ideal gradient field with FFP
 export IdealFFP
 mutable struct IdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
-  gradient::GT
+  gradient::Vector{GT}
 end
 
 fieldType(::IdealFFP) = GradientField()
