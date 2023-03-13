@@ -1,6 +1,4 @@
 @testset "CommonFields" begin
-  
-
   @testset "IdealFFP" begin
     field = IdealFFP([-1,-1,2])
 
@@ -14,7 +12,7 @@
   end
 
   @testset "IdealFFL" begin
-    field = IdealXYFFL(1, 0.0)
+    field = IdealXYFFL(1)
 
     @test fieldType(field) isa GradientField
     @test definitionType(field) isa MethodBasedFieldDefinition
@@ -26,7 +24,8 @@
     @test all(value(field, [0.5, 0, 0]) .≈ [0, 0, 0])
     @test all(value(field, [0, 0.5, 0]) .≈ [0, -0.5, 0])
 
-    # TODO: Test rotation when implementation of rotation is decided
+    @test all(isapprox.(value(field, [0.5, 0, 0], π/2), [-0.5, 0, 0], atol=1e-10))
+    @test all(isapprox.(value(field, [0, 0.5, 0], π/2), [0, 0, 0], atol=1e-10))
   end
 
   @testset "IdealHomogeneousField" begin
@@ -45,7 +44,7 @@
   end
 
   @testset "IdealXYRotatedHomogeneousField" begin
-    field = IdealXYRotatedHomogeneousField(1, 0.0)
+    field = IdealXYRotatedHomogeneousField(1)
 
     @test fieldType(field) isa HomogeneousField
     @test definitionType(field) isa MethodBasedFieldDefinition
@@ -58,6 +57,7 @@
     @test all(value(field, [1, 0, 0]) .≈ [0, 1, 0])
     @test all(value(field, [0.5, 0, 0]) .≈ [0, 1, 0])
 
-    # TODO: Test rotation when implementation of rotation is decided
+    @test all(isapprox.(value(field, [1, 0, 0], π/2), [1, 0, 0], atol=1e-10))
+    @test all(isapprox.(value(field, [0.5, 0, 0], π/2), [1, 0, 0], atol=1e-10))
   end
 end

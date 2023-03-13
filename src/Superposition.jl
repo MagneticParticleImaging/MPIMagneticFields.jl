@@ -18,29 +18,15 @@ timeDependencyType(field::SuperimposedField) = isTimeVarying(field.fieldA) || is
 export superimpose
 superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = SuperimposedField(fieldA, fieldB)
 
-value(field::SuperimposedField, r) = value(field.fieldA, r) + value(field.fieldB, r)
+value(field::SuperimposedField, r::PT) where {T <: Number, PT <: AbstractVector{T}} = value(field.fieldA, r) .+ value(field.fieldB, r)
+value(field::SuperimposedField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = value(field.fieldA, r, ϕ) + value(field.fieldB, r, ϕ)
+value(field::SuperimposedField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field.fieldA, r, δ) + value(field.fieldB, r, δ)
+value(field::SuperimposedField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field.fieldA, r, ϕ, δ) + value(field.fieldB, r, ϕ, δ)
 
-isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) && isRotatable(field.fieldB)
-isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) && isTranslatable(field.fieldB)
+isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) || isRotatable(field.fieldB)
+isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
 
-function rotate!(field::SuperimposedField, ϕ)
-  if isRotatable(field)
-    rotate!(field.fieldA, ϕ)
-    rotate!(field.fieldB, ϕ)
-  else
-    error("The superimposed field is not rotatable.")
-  end
-end
-
-function translate!(field::SuperimposedField, r)
-  if isTranslatable(field)
-    translate!(field.fieldA, r)
-    translate!(field.fieldB, r)
-  else
-    error("The superimposed field is not translatable.")
-  end
-end
-
+export NegativeField
 """
     $(TYPEDEF)
 
@@ -60,13 +46,13 @@ gradientFieldType(field::NegativeField) = gradientFieldType(field.field)
 export negative
 negative(field::AbstractMagneticField) = NegativeField(field)
 
-value(field::NegativeField, r) = .-value(field.field, r)
+value(field::NegativeField, r::PT) where {T <: Number, PT <: AbstractVector{T}} = .-value(field.field, r)
+value(field::NegativeField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = .-value(field.field, r, ϕ)
+value(field::NegativeField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, δ)
+value(field::NegativeField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, ϕ, δ)
 
 isRotatable(field::NegativeField) = isRotatable(field.field)
 isTranslatable(field::NegativeField) = isTranslatable(field.field)
-
-rotate!(field::NegativeField, ϕ) = rotate!(field.field, ϕ)
-translate!(field::NegativeField, r) = translate!(field.field, r)
 
 import Base.+, Base.-
 

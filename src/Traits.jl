@@ -50,10 +50,15 @@ struct RotationalMovement <: FieldMovementType end
 struct TranslationalMovement <: FieldMovementType end
 
 export fieldMovementType
-fieldMovementType(::AbstractMagneticField)::FieldMovementType = NoMovement() # Default
+fieldMovementType(::AbstractMagneticField) = NoMovement() # Default
+
+function compareFieldMovementType_(fieldMovementType, compareTo::CT) where {CT <: Type{<:FieldMovementType}}
+  return any([fieldMovementType_ isa compareTo for fieldMovementType_ in fieldMovementType])
+end
+compareFieldMovementType_(fieldMovementType::T, compareTo::CT) where {T <: FieldMovementType, CT <: Type{<:FieldMovementType}} = fieldMovementType isa compareTo
 
 export isRotatable
-isRotatable(field::AbstractMagneticField) = fieldMovementType(field) isa RotationalMovement
+isRotatable(field::AbstractMagneticField) = compareFieldMovementType_(fieldMovementType(field), RotationalMovement)
 
 export isTranslatable
-isTranslatable(field::AbstractMagneticField) = fieldMovementType(field) isa TranslationalMovement
+isTranslatable(field::AbstractMagneticField) = compareFieldMovementType_(fieldMovementType(field), TranslationalMovement)
