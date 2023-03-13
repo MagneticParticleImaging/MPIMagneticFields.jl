@@ -26,6 +26,7 @@ value(field::SuperimposedField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <:
 isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) || isRotatable(field.fieldB)
 isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
 
+export NegativeField
 """
     $(TYPEDEF)
 
@@ -48,7 +49,7 @@ negative(field::AbstractMagneticField) = NegativeField(field)
 value(field::NegativeField, r::PT) where {T <: Number, PT <: AbstractVector{T}} = .-value(field.field, r)
 value(field::NegativeField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = .-value(field.field, r, ϕ)
 value(field::NegativeField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, δ)
-value(field::NegativeField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.fieldB, r, ϕ, δ)
+value(field::NegativeField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, ϕ, δ)
 
 isRotatable(field::NegativeField) = isRotatable(field.field)
 isTranslatable(field::NegativeField) = isTranslatable(field.field)

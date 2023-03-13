@@ -52,7 +52,7 @@ struct TranslationalMovement <: FieldMovementType end
 export fieldMovementType
 fieldMovementType(::AbstractMagneticField) = NoMovement() # Default
 
-function compareFieldMovementType_(fieldMovementType, compareTo::CT) where {CT <: Type{FieldMovementType}}
+function compareFieldMovementType_(fieldMovementType, compareTo::CT) where {CT <: Type{<:FieldMovementType}}
   return any([fieldMovementType_ isa compareTo for fieldMovementType_ in fieldMovementType])
 end
 compareFieldMovementType_(fieldMovementType::T, compareTo::CT) where {T <: FieldMovementType, CT <: Type{<:FieldMovementType}} = fieldMovementType isa compareTo

@@ -24,9 +24,9 @@ function value(field::AbstractMagneticField, r::PT, ϕ::RT, δ::TT) where {T <: 
   if isTranslatable(field) && isRotatable(field)
     error("Not yet implemented")
   elseif isTranslatable(field)
-    return value(field, δ)
+    return value(field, r, δ)
   elseif isRotatable(field)
-    return value(field, ϕ)
+    return value(field, r, ϕ)
   else
     value(field, r)
   end
@@ -39,9 +39,9 @@ value(field::AbstractMagneticField, r::PT, ϕ::RT, δ::TT) where {T <: Union{Abs
 
 # Mixed vectors of ranges and scalars are Vector{Any} which does not have a dispatch yet; anything else will fail
 value(field::AbstractMagneticField, r::PT) where {T <: Any, PT <: AbstractVector{T}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r))
-value(field::AbstractMagneticField, r::PT, ϕ::RT) where {T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, RT <: Number} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ)
-value(field::AbstractMagneticField, r::PT, δ::TT) where {T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), δ)
-value(field::AbstractMagneticField, r::PT, ϕ::RT, δ::TT) where {T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ, δ)
+value(field::AbstractMagneticField, r::PT, ϕ::RT) where {T <: Any, PT <: AbstractVector{T}, RT <: Number} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ)
+value(field::AbstractMagneticField, r::PT, δ::TT) where {T <: Any, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), δ)
+value(field::AbstractMagneticField, r::PT, ϕ::RT, δ::TT) where {T <: Any, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ, δ)
 
 include("Traits.jl")
 include("Common.jl")

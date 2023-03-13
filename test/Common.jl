@@ -16,5 +16,7 @@
     
     @test all(field[1, 0, 0] .≈ [1, 0, 0])
     @test all(field[0.5, 0, 0] .≈ [1, 0, 0])
+    
+    @test Base.IndexStyle(TestIdealHomogeneousField) isa IndexCartesian
   end
 end
