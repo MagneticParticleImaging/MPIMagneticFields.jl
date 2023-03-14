@@ -1,7 +1,7 @@
 name = "MPIMagneticFields"
 uuid = "f6dda52a-86e9-4b50-afb7-f39836a99446"
 authors = ["Marija Boberg <m.boberg@uke.de> and contributors"]
-version = "0.0.2"
+version = "0.0.3"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
