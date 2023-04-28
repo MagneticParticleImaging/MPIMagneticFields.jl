@@ -5,7 +5,7 @@ using LinearAlgebra
 
 @testset "MPIMagneticFields.jl" begin
   @testset "Aqua" begin
-    Aqua.test_all(MPIMagneticFields, ambiguities=false)
+    Aqua.test_all(MPIMagneticFields)
   end
 
   include("Type.jl")
