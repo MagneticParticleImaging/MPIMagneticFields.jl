@@ -1,6 +1,6 @@
 @testset "CommonFields" begin
   @testset "IdealFFP" begin
-    field = IdealFFP([-1,-1,2])
+    field = IdealFFP([-1, -1, 2])
 
     @test fieldType(field) isa GradientField
     @test definitionType(field) isa MethodBasedFieldDefinition

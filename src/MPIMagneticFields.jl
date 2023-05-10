@@ -3,6 +3,8 @@ module MPIMagneticFields
 using DocStringExtensions
 using LinearAlgebra
 
+const μ₀ = 1.25663706212e-6
+
 export AbstractMagneticField
 """
     $(TYPEDEF)
