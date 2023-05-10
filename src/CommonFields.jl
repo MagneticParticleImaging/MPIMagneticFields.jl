@@ -27,16 +27,20 @@ value(field::IdealXYFFL, r::PT) where {T <: Number, PT <: AbstractVector{T}} = v
 value(field::IdealXYFFL, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1]*r.*field.gradient
 
 export IdealHomogeneousField
-mutable struct IdealHomogeneousField{T, U} <: AbstractMagneticField where {T <: Number, U <: Number}
-  amplitude::T
-  direction::Vector{U}
+mutable struct IdealHomogeneousField{T, V} <: AbstractMagneticField where {T <: Number, V <: AbstractVector{T}}
+  value::V
+
+  function IdealHomogeneousField(value::V) where {T <: Number, V <: AbstractVector{T}}
+    return new{T, V}(value)
+  end
 end
+IdealHomogeneousField(amplitude, direction) = IdealHomogeneousField(normalize(direction).*amplitude)
 
 fieldType(::IdealHomogeneousField) = HomogeneousField()
 definitionType(::IdealHomogeneousField) = MethodBasedFieldDefinition()
 timeDependencyType(::IdealHomogeneousField) = TimeConstant()
 
-value(field::IdealHomogeneousField, ::PT) where {T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude
+value(field::IdealHomogeneousField, ::PT) where {T <: Number, PT <: AbstractVector{T}} = field.value
 
 # TODO: Define other combinations
 export IdealXYRotatedHomogeneousField
