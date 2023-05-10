@@ -1,3 +1,11 @@
+export AbstractSuperimposedField
+"""
+    $(TYPEDEF)
+
+Abstract supertype for superimposed fields.
+"""
+abstract type AbstractSuperimposedField <: AbstractMagneticField end
+
 export SuperimposedField
 """
     $(TYPEDEF)
@@ -6,7 +14,7 @@ Container for superimposed fields.
 
 The fields in `fieldA` and `fieldB` are interpreted as being linearily superimposed.
 """
-struct SuperimposedField <: AbstractMagneticField
+struct SuperimposedField <: AbstractSuperimposedField
   fieldA::AbstractMagneticField
   fieldB::AbstractMagneticField
 end
@@ -26,6 +34,14 @@ value(field::SuperimposedField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <:
 isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) || isRotatable(field.fieldB)
 isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
 
+export AbstractNegativeField
+"""
+    $(TYPEDEF)
+
+Abstract supertype for negative fields.
+"""
+abstract type AbstractNegativeField <: AbstractMagneticField end
+
 export NegativeField
 """
     $(TYPEDEF)
@@ -34,7 +50,7 @@ Container for negative fields.
 
 The field of this container is interpreted as being the negative of `field`.
 """
-struct NegativeField <: AbstractMagneticField
+struct NegativeField <: AbstractNegativeField
   field::AbstractMagneticField
 end
 
