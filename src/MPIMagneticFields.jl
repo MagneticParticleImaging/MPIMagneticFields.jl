@@ -47,6 +47,6 @@ include("Traits.jl")
 include("Common.jl")
 include("Superposition.jl")
 include("Grid.jl")
-include("CommonFields.jl")
+include("CommonFields/CommonFields.jl")
 
 end
