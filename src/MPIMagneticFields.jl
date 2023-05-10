@@ -59,6 +59,11 @@ value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT) where {VT <: Number, T
 value(field::AbstractMagneticField, t::VT, r::PT, δ::TT) where {VT <: Number, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = [value(field, t, [r_...], δ) for r_ in Iterators.product(r...)]
 value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT, δ::TT) where {VT <: Number, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = [value(field, t, [r_...], ϕ, δ) for r_ in Iterators.product(r...)]
 
+value(field::AbstractMagneticField, t::VT, r::PT) where {VT <: AbstractRange, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}} = [value(field, tr[1], [tr[2:end]...]) for tr in Iterators.product(t, r...)]
+value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT) where {VT <: AbstractRange, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, RT <: Number} = [value(field, tr[1], [tr[2:end]...], ϕ) for tr in Iterators.product(t, r...)]
+value(field::AbstractMagneticField, t::VT, r::PT, δ::TT) where {VT <: AbstractRange, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = [value(field, tr[1], [tr[2:end]...], δ) for tr in Iterators.product(t, r...)]
+value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT, δ::TT) where {VT <: AbstractRange, T <: Union{AbstractRange, Number}, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = [value(field, t[1], [tr[2:end]...], ϕ, δ) for tr in Iterators.product(t, r...)]
+
 # Mixed vectors of ranges and scalars are Vector{Any} which does not have a dispatch yet; anything else will fail
 value(field::AbstractMagneticField, r::PT) where {T <: Any, PT <: AbstractVector{T}} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r))
 value(field::AbstractMagneticField, r::PT, ϕ::RT) where {T <: Any, PT <: AbstractVector{T}, RT <: Number} = value(field, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ)
@@ -69,6 +74,11 @@ value(field::AbstractMagneticField, t::VT, r::PT) where {VT <: Number, T <: Any,
 value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT) where {VT <: Number, T <: Any, PT <: AbstractVector{T}, RT <: Number} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ)
 value(field::AbstractMagneticField, t::VT, r::PT, δ::TT) where {VT <: Number, T <: Any, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), δ)
 value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT, δ::TT) where {VT <: Number, T <: Any, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ, δ)
+
+value(field::AbstractMagneticField, t::VT, r::PT) where {VT <: AbstractRange, T <: Any, PT <: AbstractVector{T}} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r))
+value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT) where {VT <: AbstractRange, T <: Any, PT <: AbstractVector{T}, RT <: Number} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ)
+value(field::AbstractMagneticField, t::VT, r::PT, δ::TT) where {VT <: AbstractRange, T <: Any, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), δ)
+value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT, δ::TT) where {VT <: AbstractRange, T <: Any, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field, t, convert(Vector{Union{<:AbstractRange, Number}}, r), ϕ, δ)
 
 include("Traits.jl")
 include("Common.jl")
