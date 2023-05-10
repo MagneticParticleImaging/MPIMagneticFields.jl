@@ -19,4 +19,26 @@
     
     @test Base.IndexStyle(TestIdealHomogeneousField) isa IndexCartesian
   end
+
+  @testset "Time-varying indexing" begin
+    mutable struct TestIdealHomogeneousFieldTimeVarying{T, U, V} <: AbstractMagneticField where {T <: Number, U <: Number, V <: Number}
+      amplitude::T
+      frequency::V
+      direction::Vector{U}
+    end
+
+    MPIMagneticFields.fieldType(::TestIdealHomogeneousFieldTimeVarying) = HomogeneousField()
+    MPIMagneticFields.definitionType(::TestIdealHomogeneousFieldTimeVarying) = MethodBasedFieldDefinition()
+    MPIMagneticFields.timeDependencyType(::TestIdealHomogeneousFieldTimeVarying) = TimeVarying()
+    MPIMagneticFields.fieldMovementType(::TestIdealHomogeneousFieldTimeVarying) = NoMovement()
+
+    MPIMagneticFields.value(field::TestIdealHomogeneousFieldTimeVarying, t::VT, ::PT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude.*sin.(2π*field.frequency*t)
+    
+    field = TestIdealHomogeneousFieldTimeVarying(1, 1, [1, 0, 0])
+    
+    @test all(field[1/4, 1, 0, 0] .≈ [1, 0, 0])
+    @test all(field[1/4, 0.5, 0, 0] .≈ [1, 0, 0])
+    
+    @test Base.IndexStyle(TestIdealHomogeneousFieldTimeVarying) isa IndexCartesian
+  end
 end

@@ -33,7 +33,7 @@ function value(field::AbstractMagneticField, r::PT, ϕ::RT, δ::TT) where {T <: 
 end
 
 # With time dimension
-value(::AbstractMagneticField, t::VT, r::PT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = isTimeVarying(field) ? error("Not yet implemented") : value(field, r)
+value(field::AbstractMagneticField, t::VT, r::PT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = isTimeVarying(field) ? error("Not yet implemented") : value(field, r)
 value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}, RT <: Number} = isTimeVarying(field) && isRotatable(field) ? error("Not yet implemented") : value(field, t, r)
 value(field::AbstractMagneticField, t::VT, r::PT, δ::TT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = isTimeVarying(field) && isTranslatable(field) ? error("Not yet implemented") : value(field, t, r)
 function value(field::AbstractMagneticField, t::VT, r::PT, ϕ::RT, δ::TT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} 
