@@ -19,20 +19,19 @@ struct SuperimposedField <: AbstractSuperimposedField
   fieldB::AbstractMagneticField
 end
 
-fieldType(field::SuperimposedField) = fieldType(field.fieldA) == fieldType(field.fieldB) ? fieldType(field.fieldA) : MixedField()
-definitionType(field::SuperimposedField) = definitionType(field.fieldA) == definitionType(field.fieldB) ? definitionType(field.fieldA) : MixedFieldDefinition()
-timeDependencyType(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB) ? TimeVarying() : TimeConstant()
+FieldStyle(field::SuperimposedField) = FieldStyle(field.fieldA) == FieldStyle(field.fieldB) ? FieldStyle(field.fieldA) : MixedField()
+FieldDefinitionStyle(field::SuperimposedField) = FieldDefinitionStyle(field.fieldA) == FieldDefinitionStyle(field.fieldB) ? FieldDefinitionStyle(field.fieldA) : MixedFieldDefinition()
+FieldTimeDependencyStyle(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB) ? TimeVarying() : TimeConstant()
+GradientFieldStyle(field::SuperimposedField) = GradientFieldStyle(field.fieldA) == GradientFieldStyle(field.fieldB) ? GradientFieldStyle(field.fieldA) : MixedGradientField()
 
 export superimpose
 superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = SuperimposedField(fieldA, fieldB)
 
-value(field::SuperimposedField, r::PT) where {T <: Number, PT <: AbstractVector{T}} = value(field.fieldA, r) .+ value(field.fieldB, r)
-value(field::SuperimposedField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = value(field.fieldA, r, ϕ) + value(field.fieldB, r, ϕ)
-value(field::SuperimposedField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field.fieldA, r, δ) + value(field.fieldB, r, δ)
-value(field::SuperimposedField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field.fieldA, r, ϕ, δ) + value(field.fieldB, r, ϕ, δ)
+value(field::SuperimposedField, args...) = value(field.fieldA, args...) .+ value(field.fieldB, args...)
 
 isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) || isRotatable(field.fieldB)
 isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
+isTimeVarying(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB)
 
 export AbstractNegativeField
 """
@@ -54,21 +53,19 @@ struct NegativeField <: AbstractNegativeField
   field::AbstractMagneticField
 end
 
-fieldType(field::NegativeField) = fieldType(field.field)
-definitionType(field::NegativeField) = definitionType(field.field)
-timeDependencyType(field::NegativeField) = timeDependencyType(field.field)
-gradientFieldType(field::NegativeField) = gradientFieldType(field.field)
+FieldStyle(field::NegativeField) = FieldStyle(field.field)
+FieldDefinitionStyle(field::NegativeField) = FieldDefinitionStyle(field.field)
+FieldTimeDependencyStyle(field::NegativeField) = FieldTimeDependencyStyle(field.field)
+GradientFieldStyle(field::NegativeField) = GradientFieldStyle(field.field)
 
 export negative
 negative(field::AbstractMagneticField) = NegativeField(field)
 
-value(field::NegativeField, r::PT) where {T <: Number, PT <: AbstractVector{T}} = .-value(field.field, r)
-value(field::NegativeField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = .-value(field.field, r, ϕ)
-value(field::NegativeField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, δ)
-value(field::NegativeField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = .-value(field.field, r, ϕ, δ)
+value(field::NegativeField, args...) = .-value(field.field, args...)
 
 isRotatable(field::NegativeField) = isRotatable(field.field)
 isTranslatable(field::NegativeField) = isTranslatable(field.field)
+isTimeVarying(field::NegativeField) = isTimeVarying(field.field)
 
 import Base.+, Base.-
 

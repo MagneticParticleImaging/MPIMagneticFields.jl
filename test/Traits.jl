@@ -4,20 +4,20 @@
 
     testField = TestField()
 
-    @test_throws ErrorException("Not yet implemented") fieldType(testField)
-    @test_throws ErrorException("Not yet implemented") definitionType(testField)
-    @test_throws ErrorException("Not yet implemented") timeDependencyType(testField)
-    @test_throws ErrorException("Not yet implemented") gradientFieldType(testField)
+    @test FieldStyle(testField) isa OtherField
+    @test FieldDefinitionStyle(testField) isa MethodBasedFieldDefinition
+    @test FieldTimeDependencyStyle(testField) isa TimeConstant
+    @test isnothing(GradientFieldStyle(testField))
   end
 
   @testset "Implemented rotational" begin
     mutable struct TestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldImplemented) = GradientField()
-    MPIMagneticFields.definitionType(::TestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.gradientFieldType(::TestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.fieldMovementType(::TestFieldImplemented) = RotationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldImplemented) = RotationalMovement()
 
     testField = TestFieldImplemented()
 
@@ -29,11 +29,11 @@
   @testset "Implemented translational" begin
     mutable struct TestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldImplemented) = GradientField()
-    MPIMagneticFields.definitionType(::TestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.gradientFieldType(::TestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.fieldMovementType(::TestFieldImplemented) = TranslationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldImplemented) = TranslationalMovement()
 
     testField = TestFieldImplemented()
 
@@ -45,11 +45,11 @@
   @testset "Implemented translational" begin
     mutable struct TestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldImplemented) = GradientField()
-    MPIMagneticFields.definitionType(::TestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.gradientFieldType(::TestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.fieldMovementType(::TestFieldImplemented) = (RotationalMovement(), TranslationalMovement())
+    MPIMagneticFields.FieldStyle(::TestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldImplemented) = RotationalTranslationalMovement()
 
     testField = TestFieldImplemented()
 

@@ -3,9 +3,9 @@ mutable struct IdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
   gradient::Vector{GT}
 end
 
-fieldType(::IdealFFP) = GradientField()
-definitionType(::IdealFFP) = MethodBasedFieldDefinition()
-timeDependencyType(::IdealFFP) = TimeConstant()
-gradientFieldType(::IdealFFP) = FFPGradientField()
+FieldStyle(::IdealFFP) = GradientField()
+FieldDefinitionStyle(::IdealFFP) = MethodBasedFieldDefinition()
+FieldTimeDependencyStyle(::IdealFFP) = TimeConstant()
+GradientFieldStyle(::IdealFFP) = FFPGradientField()
 
-value(field::IdealFFP, r::PT) where {T <: Number, PT <: AbstractVector{T}} = r.*field.gradient
+value_(field::IdealFFP, r) = r.*field.gradient

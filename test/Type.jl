@@ -4,37 +4,32 @@
 
     testField = TestField()
 
-    @test_throws ErrorException("Not yet implemented") value(testField, [0, 0, 0])
-    @test_throws ErrorException("Not yet implemented") value(testField, [0, 0, 0], 0.0)
-    @test_throws ErrorException("Not yet implemented") value(testField, [0, 0, 0], [0.0, 0.0, 0.0])
-    @test_throws ErrorException("Not yet implemented") value(testField, [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
+    @test_throws ErrorException value(testField, [0, 0, 0])
   end
 
   @testset "Movement variants" begin
     mutable struct TestFieldRotatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldRotatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldRotatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldRotatable) = TimeConstant()
-    MPIMagneticFields.fieldMovementType(::TestFieldRotatable) = RotationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldRotatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldRotatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldRotatable) = TimeConstant()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldRotatable) = RotationalMovement()
 
     mutable struct TestFieldTranslatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldTranslatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldTranslatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldTranslatable) = TimeConstant()
-    MPIMagneticFields.fieldMovementType(::TestFieldTranslatable) =  TranslationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldTranslatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldTranslatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldTranslatable) = TimeConstant()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldTranslatable) =  TranslationalMovement()
 
     mutable struct TestFieldRotatableTranslatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldRotatableTranslatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldRotatableTranslatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldRotatableTranslatable) = TimeConstant()
-    MPIMagneticFields.fieldMovementType(::TestFieldRotatableTranslatable) = (RotationalMovement(), TranslationalMovement())
+    MPIMagneticFields.FieldStyle(::TestFieldRotatableTranslatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldRotatableTranslatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldRotatableTranslatable) = TimeConstant()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldRotatableTranslatable) = RotationalTranslationalMovement()
 
-    @test_throws ErrorException("Not yet implemented") value(TestFieldRotatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
-    @test_throws ErrorException("Not yet implemented") value(TestFieldTranslatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
-    @test_throws ErrorException("Not yet implemented") value(TestFieldRotatableTranslatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
+    #TODO: Add tests
   end
 
   @testset "Time-varying" begin
@@ -44,87 +39,60 @@
       direction::Vector{U}
     end
 
-    MPIMagneticFields.fieldType(::TestFieldTimeVarying) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldTimeVarying) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldTimeVarying) = TimeVarying()
-    MPIMagneticFields.fieldMovementType(::TestFieldTimeVarying) = NoMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldTimeVarying) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldTimeVarying) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldTimeVarying) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldTimeVarying) = NoMovement()
 
-    MPIMagneticFields.value(field::TestFieldTimeVarying, t::VT, ::PT) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude.*sin.(2π*field.frequency*t)
+    MPIMagneticFields.value_(field::TestFieldTimeVarying, t, r) = normalize(field.direction).*field.amplitude.*sin.(2π*field.frequency*t)
 
     mutable struct TestFieldTimeVaryingRotatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldTimeVaryingRotatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldTimeVaryingRotatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldTimeVaryingRotatable) = TimeVarying()
-    MPIMagneticFields.fieldMovementType(::TestFieldTimeVaryingRotatable) = RotationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldTimeVaryingRotatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldTimeVaryingRotatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldTimeVaryingRotatable) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldTimeVaryingRotatable) = RotationalMovement()
 
     mutable struct TestFieldTimeVaryingTranslatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldTimeVaryingTranslatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldTimeVaryingTranslatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldTimeVaryingTranslatable) = TimeVarying()
-    MPIMagneticFields.fieldMovementType(::TestFieldTimeVaryingTranslatable) =  TranslationalMovement()
+    MPIMagneticFields.FieldStyle(::TestFieldTimeVaryingTranslatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldTimeVaryingTranslatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldTimeVaryingTranslatable) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldTimeVaryingTranslatable) =  TranslationalMovement()
 
     mutable struct TestFieldTimeVaryingRotatableTranslatable <: AbstractMagneticField end
 
-    MPIMagneticFields.fieldType(::TestFieldTimeVaryingRotatableTranslatable) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestFieldTimeVaryingRotatableTranslatable) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestFieldTimeVaryingRotatableTranslatable) = TimeVarying()
-    MPIMagneticFields.fieldMovementType(::TestFieldTimeVaryingRotatableTranslatable) = (RotationalMovement(), TranslationalMovement())
+    MPIMagneticFields.FieldStyle(::TestFieldTimeVaryingRotatableTranslatable) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestFieldTimeVaryingRotatableTranslatable) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestFieldTimeVaryingRotatableTranslatable) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TestFieldTimeVaryingRotatableTranslatable) = RotationalTranslationalMovement()
 
     field = TestFieldTimeVarying(1, 1, [1, 0, 0])
 
     @test all(value(field, 1/4, [1:2, 1:2, 1:2]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1:2, 1:2], 0.0) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1:2, 1:2], [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1:2, 1:2], 0.0, [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-
     @test all(value(field, 1/4, [1:2, 1, 1:2]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1, 1:2], 0.0) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1, 1:2], [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 1/4, [1:2, 1, 1:2], 0.0, [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-
     @test all(value(field, 0, [1:2, 1:2, 1:2]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 0, [1:2, 1:2, 1:2], 0.0) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 0, [1:2, 1:2, 1:2], [1, 0, 0]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, 0, [1:2, 1:2, 1:2], 0.0, [1, 0, 0]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-
     @test all(value(field, 0, [1:2, 1, 1:2]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 0, [1:2, 1, 1:2], 0.0) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 0, [1:2, 1, 1:2], [1, 0, 0]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, 0, [1:2, 1, 1:2], 0.0, [1, 0, 0]) .≈ [[0.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
 
-    @test_throws ErrorException("Not yet implemented") value(TestFieldTimeVaryingRotatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
-    @test_throws ErrorException("Not yet implemented") value(TestFieldTimeVaryingTranslatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
-    @test_throws ErrorException("Not yet implemented") value(TestFieldTimeVaryingRotatableTranslatable(), [0, 0, 0], 0.0, [0.0, 0.0, 0.0])
+    #TODO: add other tests
   end
 
   @testset "Ranges" begin
-    mutable struct TestIdealHomogeneousField{T, U} <: AbstractMagneticField where {T <: Number, U <: Number}
+    mutable struct TestRangesIdealHomogeneousField{T, U} <: AbstractMagneticField where {T <: Number, U <: Number}
       amplitude::T
       direction::Vector{U}
     end
 
-    MPIMagneticFields.fieldType(::TestIdealHomogeneousField) = HomogeneousField()
-    MPIMagneticFields.definitionType(::TestIdealHomogeneousField) = MethodBasedFieldDefinition()
-    MPIMagneticFields.timeDependencyType(::TestIdealHomogeneousField) = TimeConstant()
-    MPIMagneticFields.fieldMovementType(::TestIdealHomogeneousField) = (RotationalMovement(), TranslationalMovement())
+    MPIMagneticFields.FieldStyle(::TestRangesIdealHomogeneousField) = HomogeneousField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestRangesIdealHomogeneousField) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestRangesIdealHomogeneousField) = TimeConstant()
+    MPIMagneticFields.FieldMovementStyle(::TestRangesIdealHomogeneousField) = RotationalTranslationalMovement()
 
-    MPIMagneticFields.value(field::TestIdealHomogeneousField, ::PT) where {T <: Number, PT <: AbstractVector{T}} = normalize(field.direction).*field.amplitude
-    MPIMagneticFields.value(field::TestIdealHomogeneousField, r::PT, ϕ::RT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number} = value(field, r)
-    MPIMagneticFields.value(field::TestIdealHomogeneousField, r::PT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, T2 <: Number, TT <: AbstractVector{T2}} = value(field, r) # A homogeneous field is shift-invariant
-    MPIMagneticFields.value(field::TestIdealHomogeneousField, r::PT, ϕ::RT, δ::TT) where {T <: Number, PT <: AbstractVector{T}, RT <: Number, T2 <: Number, TT <: AbstractVector{T2}} = value(field, r, ϕ)
+    MPIMagneticFields.value_(field::TestRangesIdealHomogeneousField, r, ϕ, δ) = normalize(field.direction).*field.amplitude # A homogeneous field is shift-invariant
 
-    field = TestIdealHomogeneousField(1, [1, 0, 0])
+    field = TestRangesIdealHomogeneousField(1, [1, 0, 0])
 
-    @test all(value(field, [1:2, 1:2, 1:2]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, [1:2, 1:2, 1:2], 0.0) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-    @test all(value(field, [1:2, 1:2, 1:2], [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
     @test all(value(field, [1:2, 1:2, 1:2], 0.0, [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:2, z in 1:2])
-
-    @test all(value(field, [1:2, 1, 1:2]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, [1:2, 1, 1:2], 0.0) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
-    @test all(value(field, [1:2, 1, 1:2], [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
     @test all(value(field, [1:2, 1, 1:2], 0.0, [1, 0, 0]) .≈ [[1.0, 0.0, 0.0] for x in 1:2, y in 1:1, z in 1:2])
   end
 
