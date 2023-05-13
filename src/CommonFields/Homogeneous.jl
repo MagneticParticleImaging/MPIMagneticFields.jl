@@ -1,14 +1,17 @@
 export IdealHomogeneousField
-mutable struct IdealHomogeneousField{T, U} <: AbstractMagneticField where {T <: Number, U <: Number}
-  amplitude::T
-  direction::Vector{U}
+mutable struct IdealHomogeneousField{U} <: AbstractMagneticField where {T <: Number, U <: AbstractVector{T}}
+  value::U
+
+  function IdealHomogeneousField(value::U) where {T <: Number, U <: AbstractVector{T}}
+    new{U}(value)
+  end
 end
 
 FieldStyle(::IdealHomogeneousField) = HomogeneousField()
 FieldDefinitionStyle(::IdealHomogeneousField) = MethodBasedFieldDefinition()
 FieldTimeDependencyStyle(::IdealHomogeneousField) = TimeConstant()
 
-value_(field::IdealHomogeneousField, r) = normalize(field.direction).*field.amplitude
+value_(field::IdealHomogeneousField, r) = field.value
 
 # TODO: Define other combinations
 export IdealXYRotatedHomogeneousField

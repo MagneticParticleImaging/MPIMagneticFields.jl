@@ -4,7 +4,7 @@ mutable struct IdealXYFFL{GT} <: AbstractMagneticField where {GT <: Number}
 end
 
 FieldStyle(::IdealXYFFL) = GradientField()
-FieldStyle(::IdealXYFFL) = MethodBasedFieldDefinition()
+FieldDefinitionStyle(::IdealXYFFL) = MethodBasedFieldDefinition()
 FieldTimeDependencyStyle(::IdealXYFFL) = TimeConstant()
 GradientFieldStyle(::IdealXYFFL) = FFLGradientField()
 FieldMovementStyle(::IdealXYFFL) = RotationalMovement()

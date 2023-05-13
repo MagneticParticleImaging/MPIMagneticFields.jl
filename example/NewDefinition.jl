@@ -10,11 +10,11 @@ mutable struct IdealDipoleField{T, V} <: AbstractMagneticField where {T <: Numbe
   end
 end
 
-MPIMagneticFields.fieldType(::IdealDipoleField) = OtherField()
-MPIMagneticFields.definitionType(::IdealDipoleField) = MethodBasedFieldDefinition()
-MPIMagneticFields.timeDependencyType(::IdealDipoleField) = TimeConstant()
+MPIMagneticFields.FieldStyle(::IdealDipoleField) = OtherField()
+MPIMagneticFields.FieldDefinitionStyle(::IdealDipoleField) = MethodBasedFieldDefinition()
+MPIMagneticFields.FieldTimeDependencyStyle(::IdealDipoleField) = TimeConstant()
 
-function MPIMagneticFields.value(field::IdealDipoleField, r::PT) where {T <: Number, PT <: AbstractVector{T}}
+function MPIMagneticFields.value_(field::IdealDipoleField, r)
   if norm(r) == 0
     return zeros(eltype(field.magneticMoment), length(field.magneticMoment))
   else

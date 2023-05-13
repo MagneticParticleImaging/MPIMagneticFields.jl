@@ -1,6 +1,6 @@
 @testset "HomogeneousField" begin
   @testset "IdealHomogeneousField" begin
-    field = IdealHomogeneousField(1, [1, 0, 0])
+    field = IdealHomogeneousField([1, 0, 0])
 
     @test FieldStyle(field) isa HomogeneousField
     @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
