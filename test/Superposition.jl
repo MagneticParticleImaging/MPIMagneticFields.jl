@@ -63,8 +63,11 @@
       @test field isa TestIdealFFP
       @test negative(field) isa NegativeField
       @test FieldStyle(field) isa GradientField
+      @test FieldStyle(negative(field)) isa GradientField
       @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
+      @test FieldDefinitionStyle(negative(field)) isa MethodBasedFieldDefinition
       @test FieldTimeDependencyStyle(field) isa TimeConstant
+      @test FieldTimeDependencyStyle(negative(field)) isa TimeConstant
       @test GradientFieldStyle(field) isa FFPGradientField
       @test GradientFieldStyle(negative(field)) isa FFPGradientField
 
