@@ -69,3 +69,20 @@ isTranslatable(field::AbstractMagneticField) = isTranslatable(FieldMovementStyle
 isTranslatable(::FieldMovementStyle) = false
 isTranslatable(::TranslationalMovement) = true
 isTranslatable(::RotationalTranslationalMovement) = true
+
+abstract type DimensionalityStyle end
+struct OneDimensional <: DimensionalityStyle end
+struct TwoDimensional <: DimensionalityStyle end
+struct ThreeDimensional <: DimensionalityStyle end
+
+Base.length(::OneDimensional) = 1
+Base.length(::TwoDimensional) = 2
+Base.length(::ThreeDimensional) = 3
+
+export RotationalDimensionalityStyle
+struct RotationalDimensionalityStyle{T <: DimensionalityStyle} end
+RotationDimensionalityStyle(::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
+
+export TranslationalDimensionalityStyle
+struct TranslationalDimensionalityStyle{T <: DimensionalityStyle} end
+TranslationDimensionalityStyle(::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()

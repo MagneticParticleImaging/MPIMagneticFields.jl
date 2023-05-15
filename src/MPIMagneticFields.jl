@@ -81,7 +81,6 @@ value(::TimeVarying, ::RotationalTranslationalMovement, field::AbstractMagneticF
 
 include("Common.jl")
 include("Superposition.jl")
-include("Grid.jl")
 include("CommonFields/CommonFields.jl")
 
 end
