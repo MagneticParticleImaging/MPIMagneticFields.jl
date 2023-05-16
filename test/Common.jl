@@ -64,4 +64,89 @@
     
     @test Base.IndexStyle(TestIdealHomogeneousFieldTimeVarying) isa IndexCartesian
   end
+
+  @testset "Dispatch" begin
+    for timeDependency in [TimeConstant, TimeVarying]
+      @warn timeDependency
+      @testset "No movement ($timeDependency)" begin
+        struct TestIndexingNoMovement <: AbstractMagneticField end
+        MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingNoMovement) = timeDependency()
+        MPIMagneticFields.FieldMovementStyle(::TestIndexingNoMovement) = NoMovement()
+        MPIMagneticFields.value_(::TestIndexingNoMovement, args...) = args
+
+        field = TestIndexingNoMovement()
+        t = 0
+        r = [0, 0, 0]
+        if timeDependency == TimeConstant
+          @test field[r...] == tuple(r)
+        elseif timeDependency == TimeVarying
+          @test field[t, r...] == tuple(t, r)
+        end
+      end
+      
+      for rotationalDimensionalityStyle in [RotationalDimensionalityStyle{OneDimensional}, RotationalDimensionalityStyle{TwoDimensional}, RotationalDimensionalityStyle{ThreeDimensional}]
+        @testset "Rotational movement ($timeDependency, $(rotationalDimensionalityStyle.parameters[1]))" begin
+          struct TestIndexingRotationalMovement <: AbstractMagneticField end
+          MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingRotationalMovement) = timeDependency()
+          MPIMagneticFields.FieldMovementStyle(::TestIndexingRotationalMovement) = RotationalMovement()
+          MPIMagneticFields.RotationalDimensionalityStyle(::RotationalMovement, field::TestIndexingRotationalMovement) = rotationalDimensionalityStyle()
+          MPIMagneticFields.value_(::TestIndexingRotationalMovement, args...) = args
+      
+          field = TestIndexingRotationalMovement()
+          t = 0
+          r = [1, 2, 3]
+          ϕ = collect(4:3+length(rotationalDimensionalityStyle))
+          if timeDependency == TimeConstant
+            @test field[r..., ϕ...] == tuple(r, ϕ)
+          elseif timeDependency == TimeVarying
+            @test field[t, r..., ϕ...] == tuple(t, r, ϕ)
+          end
+        end
+      end
+    
+      for translationalDimensionalityStyle in [TranslationalDimensionalityStyle{OneDimensional}, TranslationalDimensionalityStyle{TwoDimensional}, TranslationalDimensionalityStyle{ThreeDimensional}]
+        @testset "Translational movement ($timeDependency, $(translationalDimensionalityStyle.parameters[1]))" begin
+          struct TestIndexingTranslationalMovement <: AbstractMagneticField end
+          MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingTranslationalMovement) = timeDependency()
+          MPIMagneticFields.FieldMovementStyle(::TestIndexingTranslationalMovement) = TranslationalMovement()
+          MPIMagneticFields.TranslationalDimensionalityStyle(::TranslationalMovement, field::TestIndexingTranslationalMovement) = translationalDimensionalityStyle()
+          MPIMagneticFields.value_(::TestIndexingTranslationalMovement, args...) = args
+      
+          field = TestIndexingTranslationalMovement()
+          t = 0
+          r = [1, 2, 3]
+          δ = collect(4:3+length(translationalDimensionalityStyle))
+          if timeDependency == TimeConstant
+            @test field[r..., δ...] == tuple(r, δ)
+          elseif timeDependency == TimeVarying
+            @test field[t, r..., δ...] == tuple(t, r, δ)
+          end
+        end
+      end
+    
+      for rotationalDimensionalityStyle in [RotationalDimensionalityStyle{OneDimensional}, RotationalDimensionalityStyle{TwoDimensional}, RotationalDimensionalityStyle{ThreeDimensional}]
+        for translationalDimensionalityStyle in [TranslationalDimensionalityStyle{OneDimensional}, TranslationalDimensionalityStyle{TwoDimensional}, TranslationalDimensionalityStyle{ThreeDimensional}]
+          @testset "Rotational and translational movement ($timeDependency, $(rotationalDimensionalityStyle.parameters[1]), $(translationalDimensionalityStyle.parameters[1]))" begin
+            struct TestIndexingRotationalTranslationalMovement <: AbstractMagneticField end
+            MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingRotationalTranslationalMovement) = timeDependency()
+            MPIMagneticFields.FieldMovementStyle(::TestIndexingRotationalTranslationalMovement) = RotationalTranslationalMovement()
+            MPIMagneticFields.RotationalDimensionalityStyle(::RotationalMovement, field::TestIndexingRotationalTranslationalMovement) = rotationalDimensionalityStyle()
+            MPIMagneticFields.TranslationalDimensionalityStyle(::TranslationalMovement, field::TestIndexingRotationalTranslationalMovement) = translationalDimensionalityStyle()
+            MPIMagneticFields.value_(::TestIndexingRotationalTranslationalMovement, args...) = args
+      
+            field = TestIndexingTranslationalMovement()
+            t = 0
+            r = [1, 2, 3]
+            ϕ = collect(4:3+length(rotationalDimensionalityStyle))
+            δ = collect(4+length(rotationalDimensionalityStyle):3+length(rotationalDimensionalityStyle)+length(translationalDimensionalityStyle))
+            # if timeDependency == TimeConstant
+            #   @test field[r..., ϕ..., δ...] == tuple(r, ϕ, δ)
+            # elseif timeDependency == TimeVarying
+            #   @test field[t, r..., ϕ..., δ...] == tuple(t, r, ϕ, δ)
+            # end
+          end
+        end
+      end
+    end
+  end
 end

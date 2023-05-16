@@ -1,9 +1,9 @@
 @testset "Type" begin
-  @testset "Not implemented" begin
+  @testset "Defaults" begin
     mutable struct TestField <: AbstractMagneticField end
 
     testField = TestField()
-
+    
     @test_throws ErrorException value(testField, [0, 0, 0])
   end
 

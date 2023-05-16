@@ -1,5 +1,5 @@
 @testset "Traits" begin
-  @testset "Not implemented" begin
+  @testset "Defaults" begin
     mutable struct TestField <: AbstractMagneticField end
 
     testField = TestField()
@@ -8,6 +8,10 @@
     @test FieldDefinitionStyle(testField) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(testField) isa TimeConstant
     @test isnothing(GradientFieldStyle(testField))
+    @test FieldMovementStyle(testField) isa NoMovement
+
+    @test isnothing(RotationalDimensionalityStyle(testField))
+    @test isnothing(TranslationalDimensionalityStyle(testField))
   end
 
   @testset "Implemented rotational" begin
@@ -24,6 +28,9 @@
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == true
     @test isTranslatable(testField) == false
+
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
+    @test isnothing(TranslationalDimensionalityStyle(testField))
   end
 
   @testset "Implemented translational" begin
@@ -40,6 +47,9 @@
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == false
     @test isTranslatable(testField) == true
+
+    @test isnothing(RotationalDimensionalityStyle(testField))
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
   end
 
   @testset "Implemented translational" begin
@@ -56,5 +66,8 @@
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == true
     @test isTranslatable(testField) == true
+
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
   end
 end

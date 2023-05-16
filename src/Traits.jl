@@ -70,19 +70,30 @@ isTranslatable(::FieldMovementStyle) = false
 isTranslatable(::TranslationalMovement) = true
 isTranslatable(::RotationalTranslationalMovement) = true
 
+export DimensionalityStyle, OneDimensional, TwoDimensional, ThreeDimensional
 abstract type DimensionalityStyle end
 struct OneDimensional <: DimensionalityStyle end
 struct TwoDimensional <: DimensionalityStyle end
 struct ThreeDimensional <: DimensionalityStyle end
 
-Base.length(::OneDimensional) = 1
-Base.length(::TwoDimensional) = 2
-Base.length(::ThreeDimensional) = 3
+Base.length(::Type{OneDimensional}) = 1
+Base.length(::Type{TwoDimensional}) = 2
+Base.length(::Type{ThreeDimensional}) = 3
+
+export MovementDimensionalityStyle
+abstract type MovementDimensionalityStyle{T <: DimensionalityStyle} end
+Base.length(::Type{<:MovementDimensionalityStyle{T}}) where T <: DimensionalityStyle = length(T)
 
 export RotationalDimensionalityStyle
-struct RotationalDimensionalityStyle{T <: DimensionalityStyle} end
-RotationDimensionalityStyle(::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
+struct RotationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimensionalityStyle{T} end
+RotationalDimensionalityStyle(field::AbstractMagneticField) = RotationalDimensionalityStyle(FieldMovementStyle(field), field)
+RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
+RotationalDimensionalityStyle(::RotationalMovement, field::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
+RotationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
 
 export TranslationalDimensionalityStyle
-struct TranslationalDimensionalityStyle{T <: DimensionalityStyle} end
-TranslationDimensionalityStyle(::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()
+struct TranslationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimensionalityStyle{T} end
+TranslationalDimensionalityStyle(field::AbstractMagneticField) = TranslationalDimensionalityStyle(FieldMovementStyle(field), field)
+TranslationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
+TranslationalDimensionalityStyle(::TranslationalMovement, field::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()
+TranslationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()
