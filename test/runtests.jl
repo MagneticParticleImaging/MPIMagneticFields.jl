@@ -12,5 +12,5 @@ using LinearAlgebra
   include("Traits.jl")
   include("Common.jl")
   include("Superposition.jl")
-  include("CommonFields.jl")
+  include("CommonFields/CommonFields.jl")
 end
