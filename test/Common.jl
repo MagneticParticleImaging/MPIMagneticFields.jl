@@ -67,7 +67,6 @@
 
   @testset "Dispatch" begin
     for timeDependency in [TimeConstant, TimeVarying]
-      @warn timeDependency
       @testset "No movement ($timeDependency)" begin
         struct TestIndexingNoMovement <: AbstractMagneticField end
         MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingNoMovement) = timeDependency()
@@ -131,19 +130,20 @@
             MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingRotationalTranslationalMovement) = timeDependency()
             MPIMagneticFields.FieldMovementStyle(::TestIndexingRotationalTranslationalMovement) = RotationalTranslationalMovement()
             MPIMagneticFields.RotationalDimensionalityStyle(::RotationalMovement, field::TestIndexingRotationalTranslationalMovement) = rotationalDimensionalityStyle()
-            MPIMagneticFields.TranslationalDimensionalityStyle(::TranslationalMovement, field::TestIndexingRotationalTranslationalMovement) = translationalDimensionalityStyle()
+            MPIMagneticFields.RotationalDimensionalityStyle(::RotationalTranslationalMovement, field::TestIndexingRotationalTranslationalMovement) = rotationalDimensionalityStyle()
+            MPIMagneticFields.TranslationalDimensionalityStyle(::RotationalTranslationalMovement, field::TestIndexingRotationalTranslationalMovement) = translationalDimensionalityStyle()
             MPIMagneticFields.value_(::TestIndexingRotationalTranslationalMovement, args...) = args
       
-            field = TestIndexingTranslationalMovement()
+            field = TestIndexingRotationalTranslationalMovement()
             t = 0
             r = [1, 2, 3]
             ϕ = collect(4:3+length(rotationalDimensionalityStyle))
             δ = collect(4+length(rotationalDimensionalityStyle):3+length(rotationalDimensionalityStyle)+length(translationalDimensionalityStyle))
-            # if timeDependency == TimeConstant
-            #   @test field[r..., ϕ..., δ...] == tuple(r, ϕ, δ)
-            # elseif timeDependency == TimeVarying
-            #   @test field[t, r..., ϕ..., δ...] == tuple(t, r, ϕ, δ)
-            # end
+            if timeDependency == TimeConstant
+              @test field[r..., ϕ..., δ...] == tuple(r, ϕ, δ)
+            elseif timeDependency == TimeVarying
+              @test field[t, r..., ϕ..., δ...] == tuple(t, r, ϕ, δ)
+            end
           end
         end
       end
