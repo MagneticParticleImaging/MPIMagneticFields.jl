@@ -3,7 +3,7 @@ mutable struct IdealHomogeneousField{U} <: AbstractMagneticField where {T <: Num
   value::U
 
   function IdealHomogeneousField(value::U) where {T <: Number, U <: AbstractVector{T}}
-    new{U}(value)
+    return new{U}(value)
   end
 end
 
@@ -24,4 +24,4 @@ FieldDefinitionStyle(::IdealXYRotatedHomogeneousField) = MethodBasedFieldDefinit
 FieldTimeDependencyStyle(::IdealXYRotatedHomogeneousField) = TimeConstant()
 FieldMovementStyle(::IdealXYRotatedHomogeneousField) = RotationalMovement()
 
-value_(field::IdealXYRotatedHomogeneousField, r, ϕ) = [sin(ϕ), cos(ϕ), 0].*field.amplitude
+value_(field::IdealXYRotatedHomogeneousField, r, ϕ) = [sin(ϕ), cos(ϕ), 0] .* field.amplitude

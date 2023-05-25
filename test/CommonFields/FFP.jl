@@ -1,5 +1,5 @@
 @testset "IdealFFP" begin
-  field = IdealFFP([-1,-1,2])
+  field = IdealFFP([-1, -1, 2])
 
   @test FieldStyle(field) isa GradientField
   @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition

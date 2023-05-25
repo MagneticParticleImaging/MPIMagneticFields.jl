@@ -3,6 +3,8 @@ module MPIMagneticFields
 using DocStringExtensions
 using LinearAlgebra
 
+export μ₀
+"Vacuum magnetic permeability for usage within the field definitions"
 const μ₀ = 1.25663706212e-6
 
 export AbstractMagneticField
@@ -27,7 +29,11 @@ The rotation angle `ϕ` is the next parameter if the field is rotatable,
 otherwise it is the shift vektor `δ`.
 Note: The underscore is important!
 """
-value_(field::AbstractMagneticField, args...; kargs...) = error("Field type `$(typeof(field))` must implement internal function `value_`. Note: The underscore is important!")
+function value_(field::AbstractMagneticField, args...; kargs...)
+  return error(
+    "Field type `$(typeof(field))` must implement internal function `value_`. Note: The underscore is important!",
+  )
+end
 
 export value
 """
@@ -41,35 +47,281 @@ Retrieve the value of a magnetic field.
 # The rotation angle `ϕ` is the next parameter if the field is rotatable,
 # otherwise it is the shift vektor `δ`.
 """
-value(field::AbstractMagneticField, args...; kwargs...) = value(FieldTimeDependencyStyle(field), field, args...; kwargs...)
+function value(field::AbstractMagneticField, args...; kwargs...)
+  return value(FieldTimeDependencyStyle(field), field, args...; kwargs...)
+end
 
-value(::TimeConstant, field::AbstractMagneticField, args...; kwargs...) = value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, args...; kwargs...)
+function value(::TimeConstant, field::AbstractMagneticField, args...; kwargs...)
+  return value(
+    FieldTimeDependencyStyle(field),
+    FieldMovementStyle(field),
+    field,
+    args...;
+    kwargs...,
+  )
+end
 
-value(::TimeConstant, ::NoMovement, field::AbstractMagneticField, r::PT; kwargs...) where {T <: Number, PT <: AbstractVector{T}} = value_(field, r)
-value(::TimeConstant, ::NoMovement, field::AbstractMagneticField, r::PT; kwargs...) where {T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...]; kwargs...) for r_ in Iterators.product(r...)] # value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, convert(Vector{Union{<:AbstractRange, Number}}, r); kwargs...)
+function value(
+  ::TimeConstant,
+  ::NoMovement,
+  field::AbstractMagneticField,
+  r::PT;
+  kwargs...,
+) where {T <: Number, PT <: AbstractVector{T}}
+  return value_(field, r)
+end
+function value(
+  ::TimeConstant,
+  ::NoMovement,
+  field::AbstractMagneticField,
+  r::PT;
+  kwargs...,
+) where {T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      [r_...];
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeConstant, ::RotationalMovement, field::AbstractMagneticField, r::PT, ϕ; kwargs...) where {T <: Number, PT <: AbstractVector{T}} = value_(field, r, ϕ; kwargs...)
-value(::TimeConstant, ::RotationalMovement, field::AbstractMagneticField, r::PT, ϕ; kwargs...) where {T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], ϕ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeConstant,
+  ::RotationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  ϕ;
+  kwargs...,
+) where {T <: Number, PT <: AbstractVector{T}}
+  return value_(field, r, ϕ; kwargs...)
+end
+function value(
+  ::TimeConstant,
+  ::RotationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  ϕ;
+  kwargs...,
+) where {T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      [r_...],
+      ϕ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeConstant, ::TranslationalMovement, field::AbstractMagneticField, r::PT, δ; kwargs...) where {T <: Number, PT <: AbstractVector{T}} = value_(field, r, δ; kwargs...)
-value(::TimeConstant, ::TranslationalMovement, field::AbstractMagneticField, r::PT, δ; kwargs...) where {T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], δ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeConstant,
+  ::TranslationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  δ;
+  kwargs...,
+) where {T <: Number, PT <: AbstractVector{T}}
+  return value_(field, r, δ; kwargs...)
+end
+function value(
+  ::TimeConstant,
+  ::TranslationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  δ;
+  kwargs...,
+) where {T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      [r_...],
+      δ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeConstant, ::RotationalTranslationalMovement, field::AbstractMagneticField, r::PT, ϕ, δ; kwargs...) where {T <: Number, PT <: AbstractVector{T}} = value_(field, r, ϕ, δ; kwargs...)
-value(::TimeConstant, ::RotationalTranslationalMovement, field::AbstractMagneticField, r::PT, ϕ, δ; kwargs...) where {T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], ϕ, δ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeConstant,
+  ::RotationalTranslationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  ϕ,
+  δ;
+  kwargs...,
+) where {T <: Number, PT <: AbstractVector{T}}
+  return value_(field, r, ϕ, δ; kwargs...)
+end
+function value(
+  ::TimeConstant,
+  ::RotationalTranslationalMovement,
+  field::AbstractMagneticField,
+  r::PT,
+  ϕ,
+  δ;
+  kwargs...,
+) where {T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      [r_...],
+      ϕ,
+      δ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeVarying, field::AbstractMagneticField, args...; kwargs...) = value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, args...; kwargs...)
+function value(::TimeVarying, field::AbstractMagneticField, args...; kwargs...)
+  return value(
+    FieldTimeDependencyStyle(field),
+    FieldMovementStyle(field),
+    field,
+    args...;
+    kwargs...,
+  )
+end
 
-value(::TimeVarying, ::NoMovement, field::AbstractMagneticField, t::VT, r::PT; kwargs...) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = value_(field, t, r)
-value(::TimeVarying, ::NoMovement, field::AbstractMagneticField, t::VT, r::PT; kwargs...) where {VT <: Number, T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...]; kwargs...) for r_ in Iterators.product(r...)] # value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, convert(Vector{Union{<:AbstractRange, Number}}, r); kwargs...)
+function value(
+  ::TimeVarying,
+  ::NoMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT;
+  kwargs...,
+) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
+  return value_(field, t, r)
+end
+function value(
+  ::TimeVarying,
+  ::NoMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT;
+  kwargs...,
+) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      t,
+      [r_...];
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeVarying, ::RotationalMovement, field::AbstractMagneticField, t::VT, r::PT, ϕ; kwargs...) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = value_(field, t, r, ϕ; kwargs...)
-value(::TimeVarying, ::RotationalMovement, field::AbstractMagneticField, t::VT, r::PT, ϕ; kwargs...) where {VT <: Number, T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], ϕ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeVarying,
+  ::RotationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  ϕ;
+  kwargs...,
+) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
+  return value_(field, t, r, ϕ; kwargs...)
+end
+function value(
+  ::TimeVarying,
+  ::RotationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  ϕ;
+  kwargs...,
+) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      t,
+      [r_...],
+      ϕ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeVarying, ::TranslationalMovement, field::AbstractMagneticField, t::VT, r::PT, δ; kwargs...) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = value_(field, t, r, δ; kwargs...)
-value(::TimeVarying, ::TranslationalMovement, field::AbstractMagneticField, t::VT, r::PT, δ; kwargs...) where {VT <: Number, T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], δ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeVarying,
+  ::TranslationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  δ;
+  kwargs...,
+) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
+  return value_(field, t, r, δ; kwargs...)
+end
+function value(
+  ::TimeVarying,
+  ::TranslationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  δ;
+  kwargs...,
+) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      t,
+      [r_...],
+      δ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
-value(::TimeVarying, ::RotationalTranslationalMovement, field::AbstractMagneticField, t::VT, r::PT, ϕ, δ; kwargs...) where {VT <: Number, T <: Number, PT <: AbstractVector{T}} = value_(field, t, r, ϕ, δ; kwargs...)
-value(::TimeVarying, ::RotationalTranslationalMovement, field::AbstractMagneticField, t::VT, r::PT, ϕ, δ; kwargs...) where {VT <: Number, T <: Any, PT <: AbstractVector{T}} = [value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], ϕ, δ; kwargs...) for r_ in Iterators.product(r...)]
+function value(
+  ::TimeVarying,
+  ::RotationalTranslationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  ϕ,
+  δ;
+  kwargs...,
+) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
+  return value_(field, t, r, ϕ, δ; kwargs...)
+end
+function value(
+  ::TimeVarying,
+  ::RotationalTranslationalMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT,
+  ϕ,
+  δ;
+  kwargs...,
+) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(
+      FieldTimeDependencyStyle(field),
+      FieldMovementStyle(field),
+      field,
+      t,
+      [r_...],
+      ϕ,
+      δ;
+      kwargs...,
+    ) for r_ ∈ Iterators.product(r...)
+  ]
+end
 
 include("Common.jl")
 include("Superposition.jl")

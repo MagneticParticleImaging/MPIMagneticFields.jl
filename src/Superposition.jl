@@ -14,24 +14,58 @@ Container for superimposed fields.
 
 The fields in `fieldA` and `fieldB` are interpreted as being linearily superimposed.
 """
-struct SuperimposedField <: AbstractSuperimposedField
-  fieldA::AbstractMagneticField
-  fieldB::AbstractMagneticField
+struct SuperimposedField{T <: AbstractMagneticField, U <: AbstractMagneticField} <: AbstractSuperimposedField
+  fieldA::T
+  fieldB::U
 end
 
-FieldStyle(field::SuperimposedField) = FieldStyle(field.fieldA) == FieldStyle(field.fieldB) ? FieldStyle(field.fieldA) : MixedField()
-FieldDefinitionStyle(field::SuperimposedField) = FieldDefinitionStyle(field.fieldA) == FieldDefinitionStyle(field.fieldB) ? FieldDefinitionStyle(field.fieldA) : MixedFieldDefinition()
-FieldTimeDependencyStyle(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB) ? TimeVarying() : TimeConstant()
-GradientFieldStyle(field::SuperimposedField) = GradientFieldStyle(field.fieldA) == GradientFieldStyle(field.fieldB) ? GradientFieldStyle(field.fieldA) : MixedGradientField()
+function FieldStyle(field::SuperimposedField)
+  if FieldStyle(field.fieldA) == FieldStyle(field.fieldB)
+    return FieldStyle(field.fieldA)
+  else
+    return MixedField()
+  end
+end
+function FieldDefinitionStyle(field::SuperimposedField)
+  if FieldDefinitionStyle(field.fieldA) == FieldDefinitionStyle(field.fieldB)
+    return FieldDefinitionStyle(field.fieldA)
+  else
+    return MixedFieldDefinition()
+  end
+end
+function FieldTimeDependencyStyle(field::SuperimposedField)
+  if isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB)
+    return TimeVarying()
+  else
+    return TimeConstant()
+  end
+end
+function GradientFieldStyle(field::SuperimposedField)
+  if GradientFieldStyle(field.fieldA) == GradientFieldStyle(field.fieldB)
+    return GradientFieldStyle(field.fieldA)
+  else
+    return MixedGradientField()
+  end
+end
 
 export superimpose
-superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = SuperimposedField(fieldA, fieldB)
+function superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
+  return SuperimposedField(fieldA, fieldB)
+end
 
-value(field::SuperimposedField, args...) = value(field.fieldA, args...) .+ value(field.fieldB, args...)
+function value(field::SuperimposedField, args...)
+  return value(field.fieldA, args...) .+ value(field.fieldB, args...)
+end
 
-isRotatable(field::SuperimposedField) = isRotatable(field.fieldA) || isRotatable(field.fieldB)
-isTranslatable(field::SuperimposedField) = isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
-isTimeVarying(field::SuperimposedField) = isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB)
+function isRotatable(field::SuperimposedField)
+  return isRotatable(field.fieldA) || isRotatable(field.fieldB)
+end
+function isTranslatable(field::SuperimposedField)
+  return isTranslatable(field.fieldA) || isTranslatable(field.fieldB)
+end
+function isTimeVarying(field::SuperimposedField)
+  return isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB)
+end
 
 export AbstractNegativeField
 """
@@ -49,8 +83,8 @@ Container for negative fields.
 
 The field of this container is interpreted as being the negative of `field`.
 """
-struct NegativeField <: AbstractNegativeField
-  field::AbstractMagneticField
+struct NegativeField{T <: AbstractMagneticField} <: AbstractNegativeField
+  field::T
 end
 
 FieldStyle(field::NegativeField) = FieldStyle(field.field)
@@ -69,6 +103,10 @@ isTimeVarying(field::NegativeField) = isTimeVarying(field.field)
 
 import Base.+, Base.-
 
-(+)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = superimpose(fieldA, fieldB)
-(-)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField) = superimpose(fieldA, -fieldB)
+function (+)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
+  return superimpose(fieldA, fieldB)
+end
+function (-)(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
+  return superimpose(fieldA, -fieldB)
+end
 (-)(field::AbstractMagneticField) = negative(field)
