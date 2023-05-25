@@ -14,9 +14,9 @@ Container for superimposed fields.
 
 The fields in `fieldA` and `fieldB` are interpreted as being linearily superimposed.
 """
-struct SuperimposedField <: AbstractSuperimposedField
-  fieldA::AbstractMagneticField
-  fieldB::AbstractMagneticField
+struct SuperimposedField{T <: AbstractMagneticField, U <: AbstractMagneticField} <: AbstractSuperimposedField
+  fieldA::T
+  fieldB::U
 end
 
 function FieldStyle(field::SuperimposedField)
@@ -83,8 +83,8 @@ Container for negative fields.
 
 The field of this container is interpreted as being the negative of `field`.
 """
-struct NegativeField <: AbstractNegativeField
-  field::AbstractMagneticField
+struct NegativeField{T <: AbstractMagneticField} <: AbstractNegativeField
+  field::T
 end
 
 FieldStyle(field::NegativeField) = FieldStyle(field.field)
