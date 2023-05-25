@@ -157,4 +157,46 @@
     @test isRotatable(superimposedField) == true
     @test isTranslatable(superimposedField) == true
   end
+
+  @testset "Mixed field superposition" begin
+    mutable struct TestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
+      gradient::Vector{GT}
+    end
+
+    MPIMagneticFields.FieldStyle(::TestIdealFFP) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TestIdealFFP) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestIdealFFP) = TimeConstant()
+    MPIMagneticFields.GradientFieldStyle(::TestIdealFFP) = FFPGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TestIdealFFP) = NoMovement()
+
+    MPIMagneticFields.value_(field::TestIdealFFP, r) = r .* field.gradient
+
+    fieldA = TestIdealFFP([1, 1, 1])
+
+    mutable struct TestSuperpositionIdealHomogeneousField{T, U} <:
+                   AbstractMagneticField where {T <: Number, U <: Number}
+      amplitude::T
+      direction::Vector{U}
+    end
+
+    MPIMagneticFields.FieldStyle(::TestSuperpositionIdealHomogeneousField) = HomogeneousField()
+    function MPIMagneticFields.FieldDefinitionStyle(::TestSuperpositionIdealHomogeneousField)
+      return SymbolicBasedFieldDefinition()
+    end
+    MPIMagneticFields.FieldTimeDependencyStyle(::TestSuperpositionIdealHomogeneousField) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TestSuperpositionIdealHomogeneousField) = NoMovement()
+
+    function MPIMagneticFields.value_(field::TestSuperpositionIdealHomogeneousField, r)
+      return normalize(field.direction) .* field.amplitude
+    end
+
+    fieldB = TestSuperpositionIdealHomogeneousField(1, [1, 0, 0])
+
+    superimposedField = fieldA + fieldB
+
+    @test FieldStyle(superimposedField) isa MixedField
+    @test FieldDefinitionStyle(superimposedField) isa MixedFieldDefinition
+    @test FieldTimeDependencyStyle(superimposedField) isa TimeVarying
+    @test GradientFieldStyle(superimposedField) isa MixedGradientField
+  end
 end
