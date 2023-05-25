@@ -8,4 +8,4 @@ FieldDefinitionStyle(::IdealFFP) = MethodBasedFieldDefinition()
 FieldTimeDependencyStyle(::IdealFFP) = TimeConstant()
 GradientFieldStyle(::IdealFFP) = FFPGradientField()
 
-value_(field::IdealFFP, r) = r.*field.gradient
+value_(field::IdealFFP, r) = r .* field.gradient

@@ -9,9 +9,15 @@ struct OtherField <: FieldStyle end
 export FieldStyle
 FieldStyle(::AbstractMagneticField)::FieldStyle = OtherField()
 
-export FieldDefinitionStyle, EquationBasedFieldDefinition, DataBasedFieldDefinition,
-       MethodBasedFieldDefinition, SymbolicBasedFieldDefinition, CartesianDataBasedFieldDefinition,
-       SphericalHarmonicsDataBasedFieldDefinition, MixedFieldDefinition, OtherFieldDefinition
+export FieldDefinitionStyle,
+  EquationBasedFieldDefinition,
+  DataBasedFieldDefinition,
+  MethodBasedFieldDefinition,
+  SymbolicBasedFieldDefinition,
+  CartesianDataBasedFieldDefinition,
+  SphericalHarmonicsDataBasedFieldDefinition,
+  MixedFieldDefinition,
+  OtherFieldDefinition
 abstract type FieldDefinitionStyle end
 abstract type EquationBasedFieldDefinition <: FieldDefinitionStyle end
 abstract type DataBasedFieldDefinition <: FieldDefinitionStyle end
@@ -23,7 +29,8 @@ struct MixedFieldDefinition <: FieldDefinitionStyle end
 struct OtherFieldDefinition <: FieldDefinitionStyle end
 
 export FieldDefinitionStyle
-FieldDefinitionStyle(::AbstractMagneticField)::FieldDefinitionStyle = MethodBasedFieldDefinition()
+FieldDefinitionStyle(::AbstractMagneticField)::FieldDefinitionStyle =
+  MethodBasedFieldDefinition()
 
 export FieldTimeDependencyStyle, TimeVarying, TimeConstant
 abstract type FieldTimeDependencyStyle end
@@ -38,7 +45,8 @@ isTimeVarying(field::AbstractMagneticField) = isTimeVarying(FieldTimeDependencyS
 isTimeVarying(::TimeVarying) = true
 isTimeVarying(::TimeConstant) = false
 
-export GradientFieldStyle, FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
+export GradientFieldStyle,
+  FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
 abstract type GradientFieldStyle end
 struct FFPGradientField <: GradientFieldStyle end
 struct FFLGradientField <: GradientFieldStyle end
@@ -46,9 +54,12 @@ struct MixedGradientField <: GradientFieldStyle end
 struct OtherGradientField <: GradientFieldStyle end
 
 export GradientFieldStyle
-GradientFieldStyle(field::AbstractMagneticField) = FieldStyle(field) == GradientField ? OtherGradientField() : nothing
+function GradientFieldStyle(field::AbstractMagneticField)
+  return FieldStyle(field) == GradientField ? OtherGradientField() : nothing
+end
 
-export FieldMovementStyle, NoMovement, RotationalMovement, TranslationalMovement, RotationalTranslationalMovement
+export FieldMovementStyle,
+  NoMovement, RotationalMovement, TranslationalMovement, RotationalTranslationalMovement
 abstract type FieldMovementStyle end
 struct NoMovement <: FieldMovementStyle end
 struct RotationalMovement <: FieldMovementStyle end
@@ -82,18 +93,34 @@ Base.length(::Type{ThreeDimensional}) = 3
 
 export MovementDimensionalityStyle
 abstract type MovementDimensionalityStyle{T <: DimensionalityStyle} end
-Base.length(::Type{<:MovementDimensionalityStyle{T}}) where T <: DimensionalityStyle = length(T)
+function Base.length(::Type{<:MovementDimensionalityStyle{T}}) where {T <: DimensionalityStyle}
+  return length(T)
+end
 
 export RotationalDimensionalityStyle
 struct RotationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimensionalityStyle{T} end
-RotationalDimensionalityStyle(field::AbstractMagneticField) = RotationalDimensionalityStyle(FieldMovementStyle(field), field)
+function RotationalDimensionalityStyle(field::AbstractMagneticField)
+  return RotationalDimensionalityStyle(FieldMovementStyle(field), field)
+end
 RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
-RotationalDimensionalityStyle(::RotationalMovement, field::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
-RotationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField) = RotationalDimensionalityStyle{OneDimensional}()
+function RotationalDimensionalityStyle(::RotationalMovement, field::AbstractMagneticField)
+  return RotationalDimensionalityStyle{OneDimensional}()
+end
+function RotationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField)
+  return RotationalDimensionalityStyle{OneDimensional}()
+end
 
 export TranslationalDimensionalityStyle
 struct TranslationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimensionalityStyle{T} end
-TranslationalDimensionalityStyle(field::AbstractMagneticField) = TranslationalDimensionalityStyle(FieldMovementStyle(field), field)
-TranslationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
-TranslationalDimensionalityStyle(::TranslationalMovement, field::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()
-TranslationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField) = TranslationalDimensionalityStyle{ThreeDimensional}()
+function TranslationalDimensionalityStyle(field::AbstractMagneticField)
+  return TranslationalDimensionalityStyle(FieldMovementStyle(field), field)
+end
+function TranslationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField)
+  return nothing
+end
+function TranslationalDimensionalityStyle(::TranslationalMovement, field::AbstractMagneticField)
+  return TranslationalDimensionalityStyle{ThreeDimensional}()
+end
+function TranslationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField)
+  return TranslationalDimensionalityStyle{ThreeDimensional}()
+end
