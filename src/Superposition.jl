@@ -26,6 +26,7 @@ function FieldStyle(field::SuperimposedField)
     return MixedField()
   end
 end
+
 function FieldDefinitionStyle(field::SuperimposedField)
   if FieldDefinitionStyle(field.fieldA) == FieldDefinitionStyle(field.fieldB)
     return FieldDefinitionStyle(field.fieldA)
@@ -33,6 +34,7 @@ function FieldDefinitionStyle(field::SuperimposedField)
     return MixedFieldDefinition()
   end
 end
+
 function FieldTimeDependencyStyle(field::SuperimposedField)
   if isTimeVarying(field.fieldA) || isTimeVarying(field.fieldB)
     return TimeVarying()
@@ -40,6 +42,7 @@ function FieldTimeDependencyStyle(field::SuperimposedField)
     return TimeConstant()
   end
 end
+
 function GradientFieldStyle(field::SuperimposedField)
   if GradientFieldStyle(field.fieldA) == GradientFieldStyle(field.fieldB)
     return GradientFieldStyle(field.fieldA)
@@ -48,13 +51,66 @@ function GradientFieldStyle(field::SuperimposedField)
   end
 end
 
+FieldMovementStyle(field::SuperimposedField) = FieldMovementStyle(FieldMovementStyle(field.fieldA), FieldMovementStyle(field.fieldB), field)
+
+movementStylesCodeGeneration_ = (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+for fieldAMovementStyle = movementStylesCodeGeneration_
+  for fieldBMovementStyle = movementStylesCodeGeneration_
+    if fieldAMovementStyle == fieldBMovementStyle
+      @eval FieldMovementStyle(::$fieldAMovementStyle, ::fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
+    else
+      Cont here
+      @eval FieldMovementStyle(::$fieldAMovementStyle, ::fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
+    end
+end
+
+FieldMovementStyle(::NoMovement, ::NoMovement, field::SuperimposedField) = NoMovement()
+FieldMovementStyle(::NoMovement, ::TranslationalMovement, field::SuperimposedField) = TranslationalMovement()
+FieldMovementStyle(::NoMovement, ::RotationalMovement, field::SuperimposedField) = RotationalMovement()
+FieldMovementStyle(::NoMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+
+FieldMovementStyle(::RotationalMovement, ::NoMovement, field::SuperimposedField) = RotationalMovement()
+FieldMovementStyle(::RotationalMovement, ::TranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+FieldMovementStyle(::RotationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalMovement()
+FieldMovementStyle(::RotationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+
+FieldMovementStyle(::TranslationalMovement, ::NoMovement, field::SuperimposedField) = TranslationalMovement()
+FieldMovementStyle(::TranslationalMovement, ::TranslationalMovement, field::SuperimposedField) = TranslationalMovement()
+FieldMovementStyle(::TranslationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+FieldMovementStyle(::TranslationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+
+FieldMovementStyle(::RotationalTranslationalMovement, ::NoMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+FieldMovementStyle(::RotationalTranslationalMovement, ::TranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+FieldMovementStyle(::RotationalTranslationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+FieldMovementStyle(::RotationalTranslationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+
+RotationalDimensionalityStyle(field::SuperimposedField) = RotationalDimensionalityStyle(field.field)
+TranslationalDimensionalityStyle(field::SuperimposedField) = TranslationalDimensionalityStyle(field.field)
+
 export superimpose
 function superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
   return SuperimposedField(fieldA, fieldB)
 end
 
-function value(field::SuperimposedField, args...)
-  return value(field.fieldA, args...) .+ value(field.fieldB, args...)
+value(field::SuperimposedField, args...) = value(FieldTimeDependencyStyle(field), field, args...)
+function value(::TimeConstant, field::SuperimposedField, args::Vararg{T, 2}) where {T <: Union{Number, <:AbstractArray}}
+  if numMovementParameters(field.fieldA) > 0
+    valueA = value(field.fieldA, args[1], args[2])
+  else
+    valueA = value(field.fieldA, args[1])
+  end
+
+  if numMovementParameters(field.fieldB) > 0
+    valueB = value(field.fieldB, args[1], args[2])
+  else
+    valueB = value(field.fieldB, args[1])
+  end
+
+  return valueA .+ valueB
+end
+
+
+  return  .+ value(field.fieldB, args...)
 end
 
 function isRotatable(field::SuperimposedField)
@@ -91,6 +147,10 @@ FieldStyle(field::NegativeField) = FieldStyle(field.field)
 FieldDefinitionStyle(field::NegativeField) = FieldDefinitionStyle(field.field)
 FieldTimeDependencyStyle(field::NegativeField) = FieldTimeDependencyStyle(field.field)
 GradientFieldStyle(field::NegativeField) = GradientFieldStyle(field.field)
+
+FieldMovementStyle(field::NegativeField) = FieldMovementStyle(field.field)
+RotationalDimensionalityStyle(field::NegativeField) = RotationalDimensionalityStyle(field.field)
+TranslationalDimensionalityStyle(field::NegativeField) = TranslationalDimensionalityStyle(field.field)
 
 export negative
 negative(field::AbstractMagneticField) = NegativeField(field)
