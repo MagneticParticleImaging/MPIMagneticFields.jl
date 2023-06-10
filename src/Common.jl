@@ -1,495 +1,93 @@
 #Base.size(S::SquaresVector) = (S.count,)
 Base.IndexStyle(::Type{<:AbstractMagneticField}) = IndexCartesian()
 function Base.getindex(field::AbstractMagneticField, args...)
-  return getindex_(FieldTimeDependencyStyle(field), field, args...)
-end
-
-function getindex_(::TimeConstant, field::AbstractMagneticField, args...)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    field,
-    args...,
-  )
-end
-
-function getindex_(::TimeConstant, ::NoMovement, field::AbstractMagneticField, args...)
-  return value(field, [args...])
-end
-
-function getindex_(
-  ::TimeConstant,
-  ::RotationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    RotationalDimensionalityStyle(field),
-    field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 1)]...], [args[end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 2)]...], [args[(end - 1):end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 3)]...], [args[(end - 2):end]...])
-end
-
-function getindex_(
-  ::TimeConstant,
-  ::TranslationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    TranslationalDimensionalityStyle(field),
-    field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 1)]...], [args[end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 2)]...], [args[(end - 1):end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 3)]...], [args[(end - 2):end]...])
-end
-
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
   return getindex_(
     FieldTimeDependencyStyle(field),
     FieldMovementStyle(field),
     RotationalDimensionalityStyle(field),
     TranslationalDimensionalityStyle(field),
     field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 2)]...], [args[end - 1]...], [args[end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 3)]...], [args[end - 2]...], [args[(end - 1):end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, [args[1:(end - 4)]...], [args[end - 3]...], [args[(end - 2):end]...])
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 3)]...],
-    [args[(end - 2):(end - 1)]...],
-    [args[end]...],
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 4)]...],
-    [args[(end - 3):(end - 2)]...],
-    [args[(end - 1):end]...],
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 5)]...],
-    [args[(end - 4):(end - 3)]...],
-    [args[(end - 2):end]...],
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 4)]...],
-    [args[(end - 3):(end - 1)]...],
-    [args[end]...],
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 5)]...],
-    [args[(end - 4):(end - 2)]...],
-    [args[(end - 1):end]...],
-  )
-end
-function getindex_(
-  ::TimeConstant,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    [args[1:(end - 6)]...],
-    [args[(end - 5):(end - 3)]...],
-    [args[(end - 2):end]...],
+    args...
   )
 end
 
-function getindex_(::TimeVarying, field::AbstractMagneticField, args...)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    field,
-    args...,
-  )
-end
+timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
+movementStylesCodeGeneration_ = (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+dimensionalityStylesCodeGeneration_ = Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
 
-function getindex_(::TimeVarying, ::NoMovement, field::AbstractMagneticField, args...)
-  return value(field, args[1], [args[2:end]...])
-end
+for fieldTimeDependencyStyle in timeDependencyStylesCodeGeneration_
+  for fieldMovementStyle in movementStylesCodeGeneration_
+    for (fieldRotationalDimensionalityStyle, fieldRotationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+      for (fieldTranslationalDimensionalityStyle, fieldTranslationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+        if fieldMovementStyle == :NoMovement && (fieldRotationalDimensionalityStyleLength > 0 || fieldTranslationalDimensionalityStyleLength > 0)
+          funcBodyExpr = Expr(:call, :error, "If there is no movement, the roational and translational dimensionality must be zero.")
+        else
+          arguments = []
+          if fieldTimeDependencyStyle == :TimeVarying
+            push!(arguments, :(args[1]))
+          end
 
-function getindex_(
-  ::TimeVarying,
-  ::RotationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    RotationalDimensionalityStyle(field),
-    field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 1)]...], [args[end]...])
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 2)]...], [args[(end - 1):end]...])
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 3)]...], [args[(end - 2):end]...])
-end
+          rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
+          translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
+          if fieldMovementStyle in rotationalStyles_
+            if fieldMovementStyle in translationalStyles_
+              δ = :(args[(end - fieldTranslationalDimensionalityStyleLength + 1):end])
+              ϕ = :(args[(end - fieldTranslationalDimensionalityStyleLength - fieldRotationalDimensionalityStyleLength + 1):(end - fieldTranslationalDimensionalityStyleLength)])
 
-function getindex_(
-  ::TimeVarying,
-  ::TranslationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    TranslationalDimensionalityStyle(field),
-    field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 1)]...], [args[end]...])
-end
-function getindex_(
-  ::TimeVarying,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 2)]...], [args[(end - 1):end]...])
-end
-function getindex_(
-  ::TimeVarying,
-  ::TranslationalMovement,
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(field, args[1], [args[2:(end - 3)]...], [args[(end - 2):end]...])
-end
+              if fieldTimeDependencyStyle == :TimeVarying
+                r = :(args[2:(end - fieldTranslationalDimensionalityStyleLength - fieldRotationalDimensionalityStyleLength)])
+              else
+                r = :(args[1:(end - fieldTranslationalDimensionalityStyleLength - fieldRotationalDimensionalityStyleLength)])
+              end
 
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  field::AbstractMagneticField,
-  args...,
-)
-  return getindex_(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    RotationalDimensionalityStyle(field),
-    TranslationalDimensionalityStyle(field),
-    field,
-    args...,
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 4):(end - 2)]...],
-    [args[end - 1]...],
-    [args[end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 5):(end - 3)]...],
-    [args[end - 2]...],
-    [args[(end - 1):end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{OneDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 6):(end - 4)]...],
-    [args[end - 3]...],
-    [args[(end - 2):end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 5):(end - 3)]...],
-    [args[(end - 2):(end - 1)]...],
-    [args[end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 6):(end - 4)]...],
-    [args[(end - 3):(end - 2)]...],
-    [args[(end - 1):end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{TwoDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 7):(end - 5)]...],
-    [args[(end - 4):(end - 3)]...],
-    [args[(end - 2):end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{OneDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 6):(end - 4)]...],
-    [args[(end - 3):(end - 1)]...],
-    [args[end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{TwoDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 7):(end - 5)]...],
-    [args[(end - 4):(end - 2)]...],
-    [args[(end - 1):end]...],
-  )
-end
-function getindex_(
-  ::TimeVarying,
-  ::RotationalTranslationalMovement,
-  ::RotationalDimensionalityStyle{ThreeDimensional},
-  ::TranslationalDimensionalityStyle{ThreeDimensional},
-  field::AbstractMagneticField,
-  args...,
-)
-  return value(
-    field,
-    args[1],
-    [args[(end - 8):(end - 6)]...],
-    [args[(end - 5):(end - 3)]...],
-    [args[(end - 2):end]...],
-  )
+              push!(arguments, r)
+              push!(arguments, ϕ)
+              push!(arguments, δ)
+            else
+              ϕ = :(args[(end - fieldRotationalDimensionalityStyleLength + 1):end])
+
+              if fieldTimeDependencyStyle == :TimeVarying
+                r = :(args[2:(end - fieldRotationalDimensionalityStyleLength)])
+              else
+                r = :(args[1:(end - fieldRotationalDimensionalityStyleLength)])
+              end
+            end
+
+            push!(arguments, r)
+            push!(arguments, ϕ)
+          elseif fieldMovementStyle in translationalStyles_
+            δ = :(args[(end - fieldTranslationalDimensionalityStyleLength + 1):end])
+
+            if fieldTimeDependencyStyle == :TimeVarying
+              r = :(args[2:(end - fieldTranslationalDimensionalityStyleLength)])
+            else
+              r = :(args[1:(end - fieldTranslationalDimensionalityStyleLength)])
+            end
+
+            push!(arguments, r)
+            push!(arguments, δ)
+          else
+            r = :(args[1:end])
+            push!(arguments, r)
+          end
+
+          funcBody = Expr(:call, :value, :field, arguments...)
+          funcBodyExpr = Expr(:return, funcBody)
+        end
+
+        @eval begin
+          function value(
+            ::$fieldTimeDependencyStyle,
+            ::$fieldMovementStyle,
+            ::RotationalDimensionalityStyle{$fieldRotationalDimensionalityStyle},
+            ::TranslationalDimensionalityStyle{$fieldTranslationalDimensionalityStyle},
+            field::AbstractMagneticField,
+            args...;
+            kwargs...)
+            $funcBodyExpr
+          end
+        end
+      end
+    end
+  end
 end
