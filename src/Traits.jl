@@ -84,12 +84,14 @@ isTranslatable(::FieldMovementStyle) = false
 isTranslatable(::TranslationalMovement) = true
 isTranslatable(::RotationalTranslationalMovement) = true
 
-export DimensionalityStyle, OneDimensional, TwoDimensional, ThreeDimensional
+export DimensionalityStyle, ZeroDimensional, OneDimensional, TwoDimensional, ThreeDimensional
 abstract type DimensionalityStyle end
+struct ZeroDimensional <: DimensionalityStyle end
 struct OneDimensional <: DimensionalityStyle end
 struct TwoDimensional <: DimensionalityStyle end
 struct ThreeDimensional <: DimensionalityStyle end
 
+Base.length(::Type{ZeroDimensional}) = 0
 Base.length(::Type{OneDimensional}) = 1
 Base.length(::Type{TwoDimensional}) = 2
 Base.length(::Type{ThreeDimensional}) = 3
@@ -105,7 +107,9 @@ struct RotationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimens
 function RotationalDimensionalityStyle(field::AbstractMagneticField)
   return RotationalDimensionalityStyle(FieldMovementStyle(field), field)
 end
-RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
+function RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField)
+  return RotationalDimensionalityStyle{ZeroDimensional}()
+end
 function RotationalDimensionalityStyle(::RotationalMovement, field::AbstractMagneticField)
   return RotationalDimensionalityStyle{OneDimensional}()
 end
@@ -119,7 +123,7 @@ function TranslationalDimensionalityStyle(field::AbstractMagneticField)
   return TranslationalDimensionalityStyle(FieldMovementStyle(field), field)
 end
 function TranslationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField)
-  return nothing
+  return TranslationalDimensionalityStyle{ZeroDimensional}()
 end
 function TranslationalDimensionalityStyle(::TranslationalMovement, field::AbstractMagneticField)
   return TranslationalDimensionalityStyle{ThreeDimensional}()

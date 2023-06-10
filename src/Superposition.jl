@@ -54,63 +54,184 @@ end
 FieldMovementStyle(field::SuperimposedField) = FieldMovementStyle(FieldMovementStyle(field.fieldA), FieldMovementStyle(field.fieldB), field)
 
 movementStylesCodeGeneration_ = (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
-for fieldAMovementStyle = movementStylesCodeGeneration_
-  for fieldBMovementStyle = movementStylesCodeGeneration_
+movementStylesCodeGenerationPrecedence_ = Dict{Symbol, Int64}(
+  :NoMovement => 0,
+  :RotationalMovement => 1,
+  :TranslationalMovement => 1,
+  :RotationalTranslationalMovement => 2
+)
+for fieldAMovementStyle in movementStylesCodeGeneration_
+  for fieldBMovementStyle in movementStylesCodeGeneration_
     if fieldAMovementStyle == fieldBMovementStyle
-      @eval FieldMovementStyle(::$fieldAMovementStyle, ::fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
+      @eval FieldMovementStyle(::$fieldAMovementStyle, ::$fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
     else
-      Cont here
-      @eval FieldMovementStyle(::$fieldAMovementStyle, ::fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
+      if movementStylesCodeGenerationPrecedence_[fieldAMovementStyle] == movementStylesCodeGenerationPrecedence_[fieldBMovementStyle]
+        @eval FieldMovementStyle(::$fieldAMovementStyle, ::$fieldBMovementStyle, ::SuperimposedField) = RotationalTranslationalMovement()
+      elseif movementStylesCodeGenerationPrecedence_[fieldAMovementStyle] > movementStylesCodeGenerationPrecedence_[fieldBMovementStyle]
+        @eval FieldMovementStyle(::$fieldAMovementStyle, ::$fieldBMovementStyle, ::SuperimposedField) = $fieldAMovementStyle()
+      else
+        @eval FieldMovementStyle(::$fieldAMovementStyle, ::$fieldBMovementStyle, ::SuperimposedField) = $fieldBMovementStyle()
+      end
     end
+  end
 end
 
-FieldMovementStyle(::NoMovement, ::NoMovement, field::SuperimposedField) = NoMovement()
-FieldMovementStyle(::NoMovement, ::TranslationalMovement, field::SuperimposedField) = TranslationalMovement()
-FieldMovementStyle(::NoMovement, ::RotationalMovement, field::SuperimposedField) = RotationalMovement()
-FieldMovementStyle(::NoMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
+function RotationalDimensionalityStyle(field::SuperimposedField)
+  if RotationalDimensionalityStyle(field.fieldA) == RotationalDimensionalityStyle(field.fieldB)
+    return RotationalDimensionalityStyle(field.fieldA)
+  else
+    error("The dimensionality styles of the superimposed fields have to match. Consider using wrapper fields to align the dimensionality for your usecase.")
+  end
+end
 
-FieldMovementStyle(::RotationalMovement, ::NoMovement, field::SuperimposedField) = RotationalMovement()
-FieldMovementStyle(::RotationalMovement, ::TranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-FieldMovementStyle(::RotationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalMovement()
-FieldMovementStyle(::RotationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-
-FieldMovementStyle(::TranslationalMovement, ::NoMovement, field::SuperimposedField) = TranslationalMovement()
-FieldMovementStyle(::TranslationalMovement, ::TranslationalMovement, field::SuperimposedField) = TranslationalMovement()
-FieldMovementStyle(::TranslationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-FieldMovementStyle(::TranslationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-
-FieldMovementStyle(::RotationalTranslationalMovement, ::NoMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-FieldMovementStyle(::RotationalTranslationalMovement, ::TranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-FieldMovementStyle(::RotationalTranslationalMovement, ::RotationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-FieldMovementStyle(::RotationalTranslationalMovement, ::RotationalTranslationalMovement, field::SuperimposedField) = RotationalTranslationalMovement()
-
-RotationalDimensionalityStyle(field::SuperimposedField) = RotationalDimensionalityStyle(field.field)
-TranslationalDimensionalityStyle(field::SuperimposedField) = TranslationalDimensionalityStyle(field.field)
+function TranslationalDimensionalityStyle(field::SuperimposedField)
+  if TranslationalDimensionalityStyle(field.fieldA) == TranslationalDimensionalityStyle(field.fieldB)
+    return TranslationalDimensionalityStyle(field.fieldA)
+  else
+    error("The dimensionality styles of the superimposed fields have to match. Consider using wrapper fields to align the dimensionality for your usecase.")
+  end
+end
 
 export superimpose
 function superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
   return SuperimposedField(fieldA, fieldB)
 end
 
-value(field::SuperimposedField, args...) = value(FieldTimeDependencyStyle(field), field, args...)
-function value(::TimeConstant, field::SuperimposedField, args::Vararg{T, 2}) where {T <: Union{Number, <:AbstractArray}}
-  if numMovementParameters(field.fieldA) > 0
-    valueA = value(field.fieldA, args[1], args[2])
-  else
-    valueA = value(field.fieldA, args[1])
-  end
-
-  if numMovementParameters(field.fieldB) > 0
-    valueB = value(field.fieldB, args[1], args[2])
-  else
-    valueB = value(field.fieldB, args[1])
-  end
-
-  return valueA .+ valueB
+function value(field::SuperimposedField, args...; kwargs...)
+  return value(
+    FieldTimeDependencyStyle(field.fieldA),
+    FieldTimeDependencyStyle(field.fieldB),
+    FieldMovementStyle(field.fieldA),
+    FieldMovementStyle(field.fieldB),
+    RotationalDimensionalityStyle(field.fieldA),
+    RotationalDimensionalityStyle(field.fieldB),
+    TranslationalDimensionalityStyle(field.fieldA),
+    TranslationalDimensionalityStyle(field.fieldB),
+    field,
+    args...;
+    kwargs...
+  )
 end
 
+dimensionalityStylesCodeGeneration_ = Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
+timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
+for fieldATimeDependencyStyle in timeDependencyStylesCodeGeneration_
+  for fieldBTimeDependencyStyle in timeDependencyStylesCodeGeneration_
+    for fieldAMovementStyle in movementStylesCodeGeneration_
+      for fieldBMovementStyle in movementStylesCodeGeneration_
+        for (fieldARotationalDimensionalityStyle, fieldARotationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+          for (fieldBRotationalDimensionalityStyle, fieldBRotationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+            for (fieldATranslationalDimensionalityStyle, fieldATranslationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+              for (fieldBTranslationalDimensionalityStyle, fieldBTranslationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
+                if fieldARotationalDimensionalityStyle != fieldBRotationalDimensionalityStyle || fieldATranslationalDimensionalityStyle != fieldBTranslationalDimensionalityStyle
+                  funcBodyExpr = Expr(:call, :error, "The dimensionality styles of the superimposed fields have to match. Consider using wrapper fields to align the dimensionality for your usecase.")
+                else
+                  argumentsA = []
+                  argumentsB = []
+                  
+                  if fieldATimeDependencyStyle == :TimeVarying
+                    push!(argumentsA, :(args[1]))
+                  end
+                  if fieldBTimeDependencyStyle == :TimeVarying
+                    push!(argumentsB, :(args[1]))
+                  end
 
-  return  .+ value(field.fieldB, args...)
+                  rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
+                  translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
+                  if fieldAMovementStyle in rotationalStyles_ || fieldBMovementStyle in rotationalStyles_
+                    if fieldAMovementStyle in translationalStyles_ || fieldBMovementStyle in translationalStyles_
+                      δ = :(args[(end - fieldATranslationalDimensionalityStyleLength + 1):end])
+                      ϕ = :(args[(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength + 1):(end - fieldATranslationalDimensionalityStyleLength)])
+
+                      if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
+                        r = :(args[2:(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength)])
+                      else
+                        r = :(args[1:(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength)])
+                      end
+                    else
+                      ϕ = :(args[(end - fieldARotationalDimensionalityStyleLength + 1):end])
+
+                      if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
+                        r = :(args[2:(end - fieldARotationalDimensionalityStyleLength)])
+                      else
+                        r = :(args[1:(end - fieldARotationalDimensionalityStyleLength)])
+                      end
+                    end
+
+                    push!(argumentsA, r)
+                    push!(argumentsB, r)
+
+                    if fieldAMovementStyle in rotationalStyles_
+                      push!(argumentsA, ϕ)
+                    end
+                    if fieldBMovementStyle in rotationalStyles_
+                      push!(argumentsB, ϕ)
+                    end
+
+                    if fieldAMovementStyle in translationalStyles_
+                      push!(argumentsA, δ)
+                    end
+                    if fieldBMovementStyle in translationalStyles_
+                      push!(argumentsB, δ)
+                    end
+                  elseif fieldAMovementStyle in translationalStyles_ || fieldBMovementStyle in translationalStyles_
+                    δ = :(args[(end - fieldATranslationalDimensionalityStyleLength + 1):end])
+
+                    if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
+                      r = :(args[2:(end - fieldATranslationalDimensionalityStyleLength)])
+                    else
+                      r = :(args[1:(end - fieldATranslationalDimensionalityStyleLength)])
+                    end
+
+                    push!(argumentsA, r)
+                    push!(argumentsB, r)
+
+                    if fieldAMovementStyle in translationalStyles_
+                      push!(argumentsA, δ)
+                    end
+                    if fieldBMovementStyle in translationalStyles_
+                      push!(argumentsB, δ)
+                    end
+                  else
+                    if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
+                      r = :(args[2:end])
+                    else
+                      r = :(args[1:end])
+                    end
+
+                    push!(argumentsA, r)
+                    push!(argumentsB, r)
+                  end
+
+                  funcBodyA = Expr(:call, :value, :(field.fieldA), argumentsA...)
+                  funcBodyB = Expr(:call, :value, :(field.fieldB), argumentsB...)
+                  
+                  funcBodyExpr = Expr(:return, Expr(:call, :.+, :funcBodyA, :funcBodyB))
+                end
+              
+                @eval begin
+                  function value(
+                    ::$fieldATimeDependencyStyle,
+                    ::$fieldBTimeDependencyStyle,
+                    ::$fieldAMovementStyle,
+                    ::$fieldBMovementStyle,
+                    ::RotationalDimensionalityStyle{$fieldARotationalDimensionalityStyle},
+                    ::RotationalDimensionalityStyle{$fieldBRotationalDimensionalityStyle},
+                    ::TranslationalDimensionalityStyle{$fieldATranslationalDimensionalityStyle},
+                    ::TranslationalDimensionalityStyle{$fieldBTranslationalDimensionalityStyle},
+                    field::SuperimposedField,
+                    args...;
+                    kwargs...)
+                    $funcBodyExpr
+                  end
+                end
+              end
+            end
+          end
+        end        
+      end
+    end
+  end
 end
 
 function isRotatable(field::SuperimposedField)
