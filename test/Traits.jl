@@ -10,8 +10,8 @@
     @test isnothing(GradientFieldStyle(testField))
     @test FieldMovementStyle(testField) isa NoMovement
 
-    @test isnothing(RotationalDimensionalityStyle(testField))
-    @test isnothing(TranslationalDimensionalityStyle(testField))
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
   end
 
   @testset "Implemented rotational" begin
@@ -30,7 +30,7 @@
     @test isTranslatable(testField) == false
 
     @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
-    @test isnothing(TranslationalDimensionalityStyle(testField))
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
   end
 
   @testset "Implemented translational" begin
@@ -48,7 +48,7 @@
     @test isRotatable(testField) == false
     @test isTranslatable(testField) == true
 
-    @test isnothing(RotationalDimensionalityStyle(testField))
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
     @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
   end
 

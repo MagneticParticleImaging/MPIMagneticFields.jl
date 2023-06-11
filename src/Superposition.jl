@@ -140,21 +140,21 @@ for fieldATimeDependencyStyle in timeDependencyStylesCodeGeneration_
                   translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
                   if fieldAMovementStyle in rotationalStyles_ || fieldBMovementStyle in rotationalStyles_
                     if fieldAMovementStyle in translationalStyles_ || fieldBMovementStyle in translationalStyles_
-                      δ = :(args[(end - fieldATranslationalDimensionalityStyleLength + 1):end])
-                      ϕ = :(args[(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength + 1):(end - fieldATranslationalDimensionalityStyleLength)])
+                      δ = :(args[end]) #:(args[(end - $fieldATranslationalDimensionalityStyleLength + 1):end])
+                      ϕ = :(args[end-1]) #:(args[(end - $fieldATranslationalDimensionalityStyleLength - $fieldARotationalDimensionalityStyleLength + 1):(end - $fieldATranslationalDimensionalityStyleLength)])
 
                       if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
-                        r = :(args[2:(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength)])
+                        r = :(args[end-2]) # :(args[2:(end - $fieldATranslationalDimensionalityStyleLength - $fieldARotationalDimensionalityStyleLength)])
                       else
-                        r = :(args[1:(end - fieldATranslationalDimensionalityStyleLength - fieldARotationalDimensionalityStyleLength)])
+                        r = :(args[end-2]) # :(args[1:(end - $fieldATranslationalDimensionalityStyleLength - $fieldARotationalDimensionalityStyleLength)])
                       end
                     else
-                      ϕ = :(args[(end - fieldARotationalDimensionalityStyleLength + 1):end])
+                      ϕ = :(args[end]) #:(args[(end - $fieldARotationalDimensionalityStyleLength + 1):end])
 
                       if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
-                        r = :(args[2:(end - fieldARotationalDimensionalityStyleLength)])
+                        r = :(args[end-1]) #:(args[2:(end - $fieldARotationalDimensionalityStyleLength)])
                       else
-                        r = :(args[1:(end - fieldARotationalDimensionalityStyleLength)])
+                        r = :(args[end-1]) #:(args[1:(end - $fieldARotationalDimensionalityStyleLength)])
                       end
                     end
 
@@ -175,12 +175,12 @@ for fieldATimeDependencyStyle in timeDependencyStylesCodeGeneration_
                       push!(argumentsB, δ)
                     end
                   elseif fieldAMovementStyle in translationalStyles_ || fieldBMovementStyle in translationalStyles_
-                    δ = :(args[(end - fieldATranslationalDimensionalityStyleLength + 1):end])
+                    δ = :(args[end]) #:(args[(end - $fieldATranslationalDimensionalityStyleLength + 1):end])
 
                     if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
-                      r = :(args[2:(end - fieldATranslationalDimensionalityStyleLength)])
+                      r = :(args[end-1]) #:(args[2:(end - $fieldATranslationalDimensionalityStyleLength)])
                     else
-                      r = :(args[1:(end - fieldATranslationalDimensionalityStyleLength)])
+                      r = :(args[end-1]) #:(args[1:(end - $fieldATranslationalDimensionalityStyleLength)])
                     end
 
                     push!(argumentsA, r)
@@ -194,9 +194,9 @@ for fieldATimeDependencyStyle in timeDependencyStylesCodeGeneration_
                     end
                   else
                     if fieldATimeDependencyStyle == :TimeVarying || fieldBTimeDependencyStyle == :TimeVarying
-                      r = :(args[2:end])
+                      r = :(args[end]) #:(args[2:end])
                     else
-                      r = :(args[1:end])
+                      r = :(args[end]) #:(args[1:end])
                     end
 
                     push!(argumentsA, r)
@@ -206,7 +206,7 @@ for fieldATimeDependencyStyle in timeDependencyStylesCodeGeneration_
                   funcBodyA = Expr(:call, :value, :(field.fieldA), argumentsA...)
                   funcBodyB = Expr(:call, :value, :(field.fieldB), argumentsB...)
                   
-                  funcBodyExpr = Expr(:return, Expr(:call, :.+, :funcBodyA, :funcBodyB))
+                  funcBodyExpr = Expr(:return, Expr(:call, :.+, funcBodyA, funcBodyB))
                 end
               
                 @eval begin

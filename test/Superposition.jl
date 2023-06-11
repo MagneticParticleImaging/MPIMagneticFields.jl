@@ -127,6 +127,14 @@
     function MPIMagneticFields.FieldMovementStyle(::TestIdealXYRotatedTranslatedHomogeneousField)
       return RotationalTranslationalMovement()
     end
+    function MPIMagneticFields.RotationalDimensionalityStyle(::TestIdealXYRotatedTranslatedHomogeneousField)
+      return RotationalDimensionalityStyle{OneDimensional}()
+    end
+    function MPIMagneticFields.TranslationalDimensionalityStyle(
+      ::TestIdealXYRotatedTranslatedHomogeneousField,
+    )
+      return TranslationalDimensionalityStyle{ThreeDimensional}()
+    end
 
     function MPIMagneticFields.value_(field::TestIdealXYRotatedTranslatedHomogeneousField, r, ϕ, δ)
       return [sin(ϕ), cos(ϕ), 0] .* field.amplitude
@@ -141,6 +149,9 @@
     @test FieldStyle(superimposedField) isa HomogeneousField
     @test FieldDefinitionStyle(superimposedField) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(superimposedField) isa TimeConstant
+    @test RotationalDimensionalityStyle(superimposedField) isa RotationalDimensionalityStyle{OneDimensional}
+    @test TranslationalDimensionalityStyle(superimposedField) isa
+          TranslationalDimensionalityStyle{ThreeDimensional}
 
     @test all(value(superimposedField, [1, 0, 0], 0, [0, 0, 0]) .≈ [0, 2, 0])
     @test all(value(superimposedField, [0.5, 0, 0], 0, [0, 0, 0]) .≈ [0, 2, 0])
