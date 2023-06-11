@@ -19,7 +19,8 @@
 
   nodes_ = MPIMagneticFields.nodes(field, [1:2, 1:2, 0])
   @test eltype(nodes_) <: MPIMagneticFields.FieldNode
-  @test nodes_[1, 1] === MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0))
+  @test nodes_[1, 1].value == MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0)).value
+  @test nodes_[1, 1].position == MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0)).position
 
   mutable struct TestExperimentalIdealHomogeneousFieldTimeVarying{U} <:
                  AbstractMagneticField where {T <: Number, U <: AbstractVector{T}}
@@ -31,15 +32,16 @@
     return MethodBasedFieldDefinition()
   end
   function MPIMagneticFields.FieldTimeDependencyStyle(::TestExperimentalIdealHomogeneousFieldTimeVarying)
-    return TimeConstant()
+    return TimeVarying()
   end
   MPIMagneticFields.FieldMovementStyle(::TestExperimentalIdealHomogeneousFieldTimeVarying) = NoMovement()
 
-  MPIMagneticFields.value_(field::TestExperimentalIdealHomogeneousFieldTimeVarying, r) = field.value
+  MPIMagneticFields.value_(field::TestExperimentalIdealHomogeneousFieldTimeVarying, t, r) = field.value
 
   field = TestExperimentalIdealHomogeneousFieldTimeVarying([1, 0, 0])
 
   nodes_ = MPIMagneticFields.nodes(field, 0, [1:2, 1:2, 0])
   @test eltype(nodes_) <: MPIMagneticFields.FieldNode
-  @test nodes_[1, 1] === MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0))
+  @test nodes_[1, 1].value == MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0)).value
+  @test nodes_[1, 1].position == MPIMagneticFields.FieldNode([1, 0, 0], (1, 1, 0)).position
 end
