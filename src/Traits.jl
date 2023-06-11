@@ -37,8 +37,8 @@ abstract type FieldTimeDependencyStyle end
 struct TimeVarying <: FieldTimeDependencyStyle end
 struct TimeConstant <: FieldTimeDependencyStyle end
 
-Base.length(::Type{TimeVarying}) = 1
-Base.length(::Type{TimeConstant}) = 0
+# Base.length(::Type{TimeVarying}) = 1
+# Base.length(::Type{TimeConstant}) = 0
 
 export FieldTimeDependencyStyle
 FieldTimeDependencyStyle(::AbstractMagneticField)::FieldTimeDependencyStyle = TimeConstant()
@@ -148,8 +148,8 @@ end
 
 # numAdditionalParameters(field::AbstractMagneticField) = sum(listNumAdditionalParameters(field))
 
-numMovementParameters(field::AbstractMagneticField) = numMovementParameters(FieldMovementStyle(field), field)
-numMovementParameters(::NoMovement, field::AbstractMagneticField) = 0
-numMovementParameters(::RotationalMovement, field::AbstractMagneticField) = 1
-numMovementParameters(::TranslationalMovement, field::AbstractMagneticField) = 1
-numMovementParameters(::RotationalTranslationalMovement, field::AbstractMagneticField) = 2
+# numMovementParameters(field::AbstractMagneticField) = numMovementParameters(FieldMovementStyle(field), field)
+# numMovementParameters(::NoMovement, field::AbstractMagneticField) = 0
+# numMovementParameters(::RotationalMovement, field::AbstractMagneticField) = 1
+# numMovementParameters(::TranslationalMovement, field::AbstractMagneticField) = 1
+# numMovementParameters(::RotationalTranslationalMovement, field::AbstractMagneticField) = 2

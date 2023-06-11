@@ -11,7 +11,7 @@ isCIRun =
   haskey(ENV, "GITLAB_CI")
 
 @testset "MPIMagneticFields.jl" begin
-  @testset "Foramatting" begin
+  @testset "Formatting" begin
     formatted = format(pwd(); verbose = false)
 
     if !formatted && !isCIRun

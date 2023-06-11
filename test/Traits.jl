@@ -70,4 +70,16 @@
     @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
     @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
   end
+
+  @testset "Movement dimensionality styles" begin
+    @test length(RotationalDimensionalityStyle{ZeroDimensional}) == 0
+    @test length(RotationalDimensionalityStyle{OneDimensional}) == 1
+    @test length(RotationalDimensionalityStyle{TwoDimensional}) == 2
+    @test length(RotationalDimensionalityStyle{ThreeDimensional}) == 3
+
+    @test length(TranslationalDimensionalityStyle{ZeroDimensional}) == 0
+    @test length(TranslationalDimensionalityStyle{OneDimensional}) == 1
+    @test length(TranslationalDimensionalityStyle{TwoDimensional}) == 2
+    @test length(TranslationalDimensionalityStyle{ThreeDimensional}) == 3
+  end
 end
