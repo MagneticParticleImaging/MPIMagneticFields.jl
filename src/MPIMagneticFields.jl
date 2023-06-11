@@ -324,38 +324,9 @@ function value(
   ]
 end
 
-export AbstractFieldNode
-"""
-    $(TYPEDEF)
-
-Abstract supertype for evaluated nodes of magnetic fields.
-"""
-abstract type AbstractFieldNode end
-
-export FieldNode
-"""
-    $(TYPEDEF)
-
-Evaluated node of magnetic field.
-"""
-struct FieldNode{T, V} <: AbstractFieldNode
-  value::T
-  position::V
-end
-
-export nodes
-nodes(field::AbstractMagneticField, args...; kwargs...) = nodes(FieldTimeDependencyStyle(field), field, args...; kwargs...)
-# TODO: Use generator for functions
-function nodes(::TimeConstant, field::AbstractMagneticField, args...; kwargs...)
-  return [FieldNode(value(field, [r_...], args[2:end]...; kwargs...), r_) for r_ ∈ Iterators.product(args[1]...)]
-end
-function nodes(::TimeVarying, field::AbstractMagneticField, args...; kwargs...)
-  return [FieldNode(value(field, args[1], [r_...], args[3:end]...; kwargs...), r_) for r_ ∈ Iterators.product(args[2]...)]
-end
-
-
 include("Common.jl")
 include("Superposition.jl")
 include("CommonFields/CommonFields.jl")
+include("Experimental.jl")
 
 end
