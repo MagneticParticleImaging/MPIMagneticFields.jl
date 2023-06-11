@@ -37,6 +37,9 @@ abstract type FieldTimeDependencyStyle end
 struct TimeVarying <: FieldTimeDependencyStyle end
 struct TimeConstant <: FieldTimeDependencyStyle end
 
+# Base.length(::Type{TimeVarying}) = 1
+# Base.length(::Type{TimeConstant}) = 0
+
 export FieldTimeDependencyStyle
 FieldTimeDependencyStyle(::AbstractMagneticField)::FieldTimeDependencyStyle = TimeConstant()
 
@@ -81,12 +84,14 @@ isTranslatable(::FieldMovementStyle) = false
 isTranslatable(::TranslationalMovement) = true
 isTranslatable(::RotationalTranslationalMovement) = true
 
-export DimensionalityStyle, OneDimensional, TwoDimensional, ThreeDimensional
+export DimensionalityStyle, ZeroDimensional, OneDimensional, TwoDimensional, ThreeDimensional
 abstract type DimensionalityStyle end
+struct ZeroDimensional <: DimensionalityStyle end
 struct OneDimensional <: DimensionalityStyle end
 struct TwoDimensional <: DimensionalityStyle end
 struct ThreeDimensional <: DimensionalityStyle end
 
+Base.length(::Type{ZeroDimensional}) = 0
 Base.length(::Type{OneDimensional}) = 1
 Base.length(::Type{TwoDimensional}) = 2
 Base.length(::Type{ThreeDimensional}) = 3
@@ -102,7 +107,9 @@ struct RotationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimens
 function RotationalDimensionalityStyle(field::AbstractMagneticField)
   return RotationalDimensionalityStyle(FieldMovementStyle(field), field)
 end
-RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField) = nothing
+function RotationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField)
+  return RotationalDimensionalityStyle{ZeroDimensional}()
+end
 function RotationalDimensionalityStyle(::RotationalMovement, field::AbstractMagneticField)
   return RotationalDimensionalityStyle{OneDimensional}()
 end
@@ -116,7 +123,7 @@ function TranslationalDimensionalityStyle(field::AbstractMagneticField)
   return TranslationalDimensionalityStyle(FieldMovementStyle(field), field)
 end
 function TranslationalDimensionalityStyle(::FieldMovementStyle, field::AbstractMagneticField)
-  return nothing
+  return TranslationalDimensionalityStyle{ZeroDimensional}()
 end
 function TranslationalDimensionalityStyle(::TranslationalMovement, field::AbstractMagneticField)
   return TranslationalDimensionalityStyle{ThreeDimensional}()
@@ -124,3 +131,25 @@ end
 function TranslationalDimensionalityStyle(::RotationalTranslationalMovement, field::AbstractMagneticField)
   return TranslationalDimensionalityStyle{ThreeDimensional}()
 end
+
+# Note: The followig functions are not needed atm but I will leave them here for the case of future needs
+# listNumAdditionalParameters(field::AbstractMagneticField) = listNumAdditionalParameters(FieldTimeDependencyStyle(field), field)
+# listNumAdditionalParameters(::TimeConstant, field::AbstractMagneticField) = listNumAdditionalParameters(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field)
+# listNumAdditionalParameters(::TimeConstant, ::NoMovement, field::AbstractMagneticField) = []
+# listNumAdditionalParameters(::TimeConstant, ::RotationalMovement, field::AbstractMagneticField) = [length(RotationalDimensionalityStyle(field))]
+# listNumAdditionalParameters(::TimeConstant, ::TranslationalMovement, field::AbstractMagneticField) = [length(TranslationalDimensionalityStyle(field))]
+# listNumAdditionalParameters(::TimeConstant, ::RotationalTranslationalMovement, field::AbstractMagneticField) = [length(TranslationalDimensionalityStyle(field)), length(TranslationalDimensionalityStyle(field))]
+
+# listNumAdditionalParameters(::TimeVarying, field::AbstractMagneticField) = listNumAdditionalParameters(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field)
+# listNumAdditionalParameters(::TimeVarying, ::NoMovement, field::AbstractMagneticField) = [1]
+# listNumAdditionalParameters(::TimeVarying, ::RotationalMovement, field::AbstractMagneticField) = [1, length(RotationalDimensionalityStyle(field))]
+# listNumAdditionalParameters(::TimeVarying, ::TranslationalMovement, field::AbstractMagneticField) = [1, length(TranslationalDimensionalityStyle(field))]
+# listNumAdditionalParameters(::TimeVarying, ::RotationalTranslationalMovement, field::AbstractMagneticField) = [1, length(TranslationalDimensionalityStyle(field)), length(TranslationalDimensionalityStyle(field))]
+
+# numAdditionalParameters(field::AbstractMagneticField) = sum(listNumAdditionalParameters(field))
+
+# numMovementParameters(field::AbstractMagneticField) = numMovementParameters(FieldMovementStyle(field), field)
+# numMovementParameters(::NoMovement, field::AbstractMagneticField) = 0
+# numMovementParameters(::RotationalMovement, field::AbstractMagneticField) = 1
+# numMovementParameters(::TranslationalMovement, field::AbstractMagneticField) = 1
+# numMovementParameters(::RotationalTranslationalMovement, field::AbstractMagneticField) = 2

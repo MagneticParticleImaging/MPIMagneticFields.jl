@@ -127,6 +127,14 @@
     function MPIMagneticFields.FieldMovementStyle(::TestIdealXYRotatedTranslatedHomogeneousField)
       return RotationalTranslationalMovement()
     end
+    function MPIMagneticFields.RotationalDimensionalityStyle(::TestIdealXYRotatedTranslatedHomogeneousField)
+      return RotationalDimensionalityStyle{OneDimensional}()
+    end
+    function MPIMagneticFields.TranslationalDimensionalityStyle(
+      ::TestIdealXYRotatedTranslatedHomogeneousField,
+    )
+      return TranslationalDimensionalityStyle{ThreeDimensional}()
+    end
 
     function MPIMagneticFields.value_(field::TestIdealXYRotatedTranslatedHomogeneousField, r, ϕ, δ)
       return [sin(ϕ), cos(ϕ), 0] .* field.amplitude
@@ -141,6 +149,9 @@
     @test FieldStyle(superimposedField) isa HomogeneousField
     @test FieldDefinitionStyle(superimposedField) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(superimposedField) isa TimeConstant
+    @test RotationalDimensionalityStyle(superimposedField) isa RotationalDimensionalityStyle{OneDimensional}
+    @test TranslationalDimensionalityStyle(superimposedField) isa
+          TranslationalDimensionalityStyle{ThreeDimensional}
 
     @test all(value(superimposedField, [1, 0, 0], 0, [0, 0, 0]) .≈ [0, 2, 0])
     @test all(value(superimposedField, [0.5, 0, 0], 0, [0, 0, 0]) .≈ [0, 2, 0])
@@ -198,5 +209,72 @@
     @test FieldDefinitionStyle(superimposedField) isa MixedFieldDefinition
     @test FieldTimeDependencyStyle(superimposedField) isa TimeVarying
     @test GradientFieldStyle(superimposedField) isa MixedGradientField
+    @test FieldMovementStyle(superimposedField) isa NoMovement
+  end
+
+  @testset "Movement styles" begin
+    mutable struct TestFieldMovementStylesNoMovement <: AbstractMagneticField end
+    MPIMagneticFields.FieldMovementStyle(::TestFieldMovementStylesNoMovement) = NoMovement()
+
+    mutable struct TestFieldMovementStylesRotationalMovement <: AbstractMagneticField end
+    MPIMagneticFields.FieldMovementStyle(::TestFieldMovementStylesRotationalMovement) = RotationalMovement()
+
+    mutable struct TestFieldMovementStylesTranslationalMovement <: AbstractMagneticField end
+    function MPIMagneticFields.FieldMovementStyle(::TestFieldMovementStylesTranslationalMovement)
+      return TranslationalMovement()
+    end
+
+    mutable struct TestFieldMovementStylesRotationalTranslationalMovement <: AbstractMagneticField end
+    function MPIMagneticFields.FieldMovementStyle(::TestFieldMovementStylesRotationalTranslationalMovement)
+      return RotationalTranslationalMovement()
+    end
+
+    superimposedField = TestFieldMovementStylesNoMovement() + TestFieldMovementStylesNoMovement()
+    @test FieldMovementStyle(superimposedField) isa NoMovement
+
+    superimposedField = TestFieldMovementStylesNoMovement() + TestFieldMovementStylesRotationalMovement()
+    @test FieldMovementStyle(superimposedField) isa RotationalMovement
+
+    superimposedField = TestFieldMovementStylesRotationalMovement() + TestFieldMovementStylesNoMovement()
+    @test FieldMovementStyle(superimposedField) isa RotationalMovement
+
+    superimposedField = TestFieldMovementStylesNoMovement() + TestFieldMovementStylesTranslationalMovement()
+    @test FieldMovementStyle(superimposedField) isa TranslationalMovement
+
+    superimposedField = TestFieldMovementStylesTranslationalMovement() + TestFieldMovementStylesNoMovement()
+    @test FieldMovementStyle(superimposedField) isa TranslationalMovement
+
+    superimposedField =
+      TestFieldMovementStylesRotationalMovement() + TestFieldMovementStylesTranslationalMovement()
+    @test FieldMovementStyle(superimposedField) isa RotationalTranslationalMovement
+  end
+
+  @testset "Movement dimensionality styles" begin
+    mutable struct TestFieldMovementDimensionalityStylesA <: AbstractMagneticField end
+    function MPIMagneticFields.FieldMovementStyle(::TestFieldMovementDimensionalityStylesA)
+      return RotationalTranslationalMovement()
+    end
+    function MPIMagneticFields.RotationalDimensionalityStyle(::TestFieldMovementDimensionalityStylesA)
+      return RotationalDimensionalityStyle{OneDimensional}
+    end
+    function MPIMagneticFields.TranslationalDimensionalityStyle(::TestFieldMovementDimensionalityStylesA)
+      return TranslationalDimensionalityStyle{OneDimensional}
+    end
+
+    mutable struct TestFieldMovementDimensionalityStylesB <: AbstractMagneticField end
+    function MPIMagneticFields.FieldMovementStyle(::TestFieldMovementDimensionalityStylesB)
+      return RotationalTranslationalMovement()
+    end
+    function MPIMagneticFields.RotationalDimensionalityStyle(::TestFieldMovementDimensionalityStylesB)
+      return RotationalDimensionalityStyle{TwoDimensional}
+    end
+    function MPIMagneticFields.TranslationalDimensionalityStyle(::TestFieldMovementDimensionalityStylesB)
+      return TranslationalDimensionalityStyle{TwoDimensional}
+    end
+
+    superimposedField = TestFieldMovementDimensionalityStylesA() + TestFieldMovementDimensionalityStylesB()
+
+    @test_throws ErrorException RotationalDimensionalityStyle(superimposedField)
+    @test_throws ErrorException TranslationalDimensionalityStyle(superimposedField)
   end
 end
