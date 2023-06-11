@@ -51,6 +51,7 @@ function value(field::AbstractMagneticField, args...; kwargs...)
   return value(FieldTimeDependencyStyle(field), field, args...; kwargs...)
 end
 
+#TODO: Shorten by generator function
 function value(::TimeConstant, field::AbstractMagneticField, args...; kwargs...)
   return value(
     FieldTimeDependencyStyle(field),
@@ -326,5 +327,6 @@ end
 include("Common.jl")
 include("Superposition.jl")
 include("CommonFields/CommonFields.jl")
+include("Experimental.jl")
 
 end
