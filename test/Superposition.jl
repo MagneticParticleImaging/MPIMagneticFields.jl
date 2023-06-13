@@ -54,7 +54,6 @@
       mutable struct TestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
         gradient::Vector{GT}
       end
-
       MPIMagneticFields.FieldStyle(::TestIdealFFP) = GradientField()
       MPIMagneticFields.FieldDefinitionStyle(::TestIdealFFP) = MethodBasedFieldDefinition()
       MPIMagneticFields.FieldTimeDependencyStyle(::TestIdealFFP) = TimeConstant()
