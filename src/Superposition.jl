@@ -93,6 +93,13 @@ function TranslationalDimensionalityStyle(field::SuperimposedField)
 end
 
 export superimpose
+"""
+$(SIGNATURES)
+
+Defines how to superimpose two fields.
+
+If this method is not defined for more specific field types, it uses the [`SuperimposedField`](@ref) wrapper.
+"""
 function superimpose(fieldA::AbstractMagneticField, fieldB::AbstractMagneticField)
   return SuperimposedField(fieldA, fieldB)
 end

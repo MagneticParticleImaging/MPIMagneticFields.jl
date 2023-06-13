@@ -19,6 +19,9 @@ makedocs(;
     assets = String[],
   ),
   pages = ["Home" => "index.md"],
+  checkdocs=:all,
+  linkcheck = true,
+  strict=[:missing_docs, :linkcheck]
 )
 
 deploydocs(;

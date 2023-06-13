@@ -1,3 +1,4 @@
+"Package for handling the magnetic fields used in Magnetic Particle Imaging."
 module MPIMagneticFields
 
 using DocStringExtensions
@@ -27,7 +28,7 @@ With a time varying field, the first argument is the time `t`.
 Otherwise the position `r` is the first parameter.
 The rotation angle `ϕ` is the next parameter if the field is rotatable,
 otherwise it is the shift vektor `δ`.
-Note: The underscore is important!
+Note: The underscore is important! This method should be extended for user-defined fields.
 """
 function value_(field::AbstractMagneticField, args...; kargs...)
   return error(
@@ -41,11 +42,11 @@ export value
 
 Retrieve the value of a magnetic field.
 
-# The order of arguments varies depending on the traits of the actual type.
-# With a time varying field, the first argument is the time `t`.
-# Otherwise the position `r` is the first parameter.
-# The rotation angle `ϕ` is the next parameter if the field is rotatable,
-# otherwise it is the shift vektor `δ`.
+The order of arguments varies depending on the traits of the actual type.
+With a time varying field, the first argument is the time `t`.
+Otherwise the position `r` is the first parameter.
+The rotation angle `ϕ` is the next parameter if the field is rotatable,
+otherwise it is the shift vektor `δ`.
 """
 function value(field::AbstractMagneticField, args...; kwargs...)
   return value(FieldTimeDependencyStyle(field), field, args...; kwargs...)
