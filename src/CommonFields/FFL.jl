@@ -9,4 +9,6 @@ FieldTimeDependencyStyle(::IdealXYFFL) = TimeConstant()
 GradientFieldStyle(::IdealXYFFL) = FFLGradientField()
 FieldMovementStyle(::IdealXYFFL) = RotationalMovement()
 
-value_(field::IdealXYFFL, r, ϕ) = [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1]*r.*field.gradient
+function value_(field::IdealXYFFL, r, ϕ)
+  return [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1] * r .* field.gradient
+end
