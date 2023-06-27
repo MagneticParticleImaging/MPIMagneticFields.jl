@@ -10,5 +10,7 @@ GradientFieldStyle(::IdealXYFFL) = FFLGradientField()
 FieldMovementStyle(::IdealXYFFL) = RotationalMovement()
 
 function value_(field::IdealXYFFL, r, ϕ)
-  return [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1] * r .* field.gradient
+  sincos_ = sincos(ϕ)
+  mat = SMatrix{3, 3}(1/2-1/2*sincos_[2], -1/2*sincos_[1], 0, -1/2*sincos_[1], 1/2+1/2*sincos_[2], 0, 0, 0, 1) .* field.gradient
+  return mat * r
 end
