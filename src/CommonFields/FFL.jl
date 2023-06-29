@@ -11,7 +11,7 @@ FieldMovementStyle(::IdealXYRotatedFFL) = RotationalMovement()
 RotationalDimensionalityStyle(::IdealXYRotatedFFL) = RotationalDimensionalityStyle{OneDimensional}()
 
 function value_(field::IdealXYRotatedFFL, r, ϕ)
-  sincos_ = sincos(-ϕ) # Rotates clockwise
+  sincos_ = sincos(-2ϕ) # Rotates clockwise
   mat = SMatrix{3, 3}(1/2-1/2*sincos_[2], -1/2*sincos_[1], 0, -1/2*sincos_[1], 1/2+1/2*sincos_[2], 0, 0, 0, 1) .* field.gradient
   return mat * r
 end
