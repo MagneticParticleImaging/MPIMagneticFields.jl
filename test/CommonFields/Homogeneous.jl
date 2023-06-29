@@ -24,6 +24,7 @@
     @test FieldMovementStyle(field) isa RotationalMovement
     @test isRotatable(field) == true
     @test isTranslatable(field) == false
+    @test RotationalDimensionalityStyle(field) isa RotationalDimensionalityStyle{OneDimensional}
 
     @test all(value(field, [1, 0, 0], 0) .≈ [0, 1, 0])
     @test all(value(field, [0.5, 0, 0], 0) .≈ [0, 1, 0])
@@ -42,6 +43,8 @@
     @test FieldMovementStyle(field) isa RotationalTranslationalMovement
     @test isRotatable(field) == true
     @test isTranslatable(field) == true
+    @test RotationalDimensionalityStyle(field) isa RotationalDimensionalityStyle{OneDimensional}
+    @test TranslationalDimensionalityStyle(field) isa TranslationalDimensionalityStyle{OneDimensional}
 
     @test all(value(field, [1, 0, 0], 0, 1) .≈ [0, 1, 0])
     @test all(value(field, [0.5, 0, 0], 0, 1) .≈ [0, 1, 0])
