@@ -2,6 +2,11 @@ module MPIMagneticFields
 
 using DocStringExtensions
 using LinearAlgebra
+using StaticArrays
+
+export μ₀
+"Vacuum magnetic permeability for usage within the field definitions"
+const μ₀ = 1.25663706212e-6
 
 export μ₀
 "Vacuum magnetic permeability for usage within the field definitions"
