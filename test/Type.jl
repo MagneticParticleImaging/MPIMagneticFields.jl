@@ -3,7 +3,6 @@
     mutable struct TestField <: AbstractMagneticField end
 
     testField = TestField()
-
     @test_throws ErrorException value(testField, [0, 0, 0])
   end
 

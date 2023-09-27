@@ -1,14 +1,16 @@
 name = "MPIMagneticFields"
 uuid = "f6dda52a-86e9-4b50-afb7-f39836a99446"
 authors = ["Marija Boberg <m.boberg@uke.de> and contributors"]
-version = "0.0.4"
+version = "0.0.6"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 DocStringExtensions = "0.8, 0.9"
+StaticArrays = "1.5"
 julia = "1"
 
 [extras]
