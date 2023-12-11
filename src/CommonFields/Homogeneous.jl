@@ -23,3 +23,15 @@ FieldTimeDependencyStyle(::IdealXYRotatedHomogeneousField) = TimeConstant()
 FieldMovementStyle(::IdealXYRotatedHomogeneousField) = RotationalMovement()
 
 value_(field::IdealXYRotatedHomogeneousField, r, ϕ) = [sin(ϕ), cos(ϕ), 0] .* field.amplitude
+
+export IdealXYRotatedTranslatedHomogeneousField
+mutable struct IdealXYRotatedTranslatedHomogeneousField <: AbstractMagneticField end
+
+FieldStyle(::IdealXYRotatedTranslatedHomogeneousField) = HomogeneousField()
+FieldDefinitionStyle(::IdealXYRotatedTranslatedHomogeneousField) = MethodBasedFieldDefinition()
+FieldTimeDependencyStyle(::IdealXYRotatedTranslatedHomogeneousField) = TimeConstant()
+FieldMovementStyle(::IdealXYRotatedTranslatedHomogeneousField) = RotationalTranslationalMovement()
+RotationalDimensionalityStyle(::IdealXYRotatedTranslatedHomogeneousField) = RotationalDimensionalityStyle{OneDimensional}()
+TranslationalDimensionalityStyle(::IdealXYRotatedTranslatedHomogeneousField) = TranslationalDimensionalityStyle{OneDimensional}()
+
+value_(field::IdealXYRotatedTranslatedHomogeneousField, r, ϕ, δ) = [sin(ϕ), cos(ϕ), 0] .* δ

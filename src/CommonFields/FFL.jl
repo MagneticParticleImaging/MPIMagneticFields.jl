@@ -1,13 +1,14 @@
-export IdealXYFFL
-mutable struct IdealXYFFL{GT} <: AbstractMagneticField where {GT <: Number}
+export IdealXYRotatedFFL
+mutable struct IdealXYRotatedFFL{GT} <: AbstractMagneticField where {GT <: Number}
   gradient::GT
 end
 
-FieldStyle(::IdealXYFFL) = GradientField()
-FieldDefinitionStyle(::IdealXYFFL) = MethodBasedFieldDefinition()
-FieldTimeDependencyStyle(::IdealXYFFL) = TimeConstant()
-GradientFieldStyle(::IdealXYFFL) = FFLGradientField()
-FieldMovementStyle(::IdealXYFFL) = RotationalMovement()
+FieldStyle(::IdealXYRotatedFFL) = GradientField()
+FieldDefinitionStyle(::IdealXYRotatedFFL) = MethodBasedFieldDefinition()
+FieldTimeDependencyStyle(::IdealXYRotatedFFL) = TimeConstant()
+GradientFieldStyle(::IdealXYRotatedFFL) = FFLGradientField()
+FieldMovementStyle(::IdealXYRotatedFFL) = RotationalMovement()
+RotationalDimensionalityStyle(::IdealXYRotatedFFL) = RotationalDimensionalityStyle{OneDimensional}()
 
 function value_(field::IdealXYRotatedFFL, r, ϕ)
   sincos_ = sincos(-ϕ) # Rotates clockwise

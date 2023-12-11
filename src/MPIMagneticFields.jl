@@ -2,6 +2,7 @@ module MPIMagneticFields
 
 using DocStringExtensions
 using LinearAlgebra
+using StaticArrays
 
 export μ₀
 """
