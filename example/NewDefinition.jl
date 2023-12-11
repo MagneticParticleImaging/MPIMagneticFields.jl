@@ -5,9 +5,7 @@ using LinearAlgebra
 mutable struct IdealDipoleField{T, V} <: AbstractMagneticField where {T <: Number, V <: AbstractVector{T}}
   magneticMoment::V
 
-  function IdealDipoleField(magneticMoment::V) where {T <: Number, V <: AbstractVector{T}}
-    return new{T, V}(magneticMoment)
-  end
+  IdealDipoleField(magneticMoment::V) where {T <: Number, V <: AbstractVector{T}} = new{T, V}(magneticMoment)
 end
 
 MPIMagneticFields.FieldStyle(::IdealDipoleField) = OtherField()
@@ -18,7 +16,8 @@ function MPIMagneticFields.value_(field::IdealDipoleField, r)
   if norm(r) == 0
     return zeros(eltype(field.magneticMoment), length(field.magneticMoment))
   else
-    return μ₀ / (4 * π) * (3 .* r .* dot(field.magneticMoment, r) ./ norm(r)^5 .- field.magneticMoment * norm(r)^3)
+    return μ₀ / (4 * π) *
+           (3 .* r .* dot(field.magneticMoment, r) ./ norm(r)^5 .- field.magneticMoment * norm(r)^3)
   end
 end
 

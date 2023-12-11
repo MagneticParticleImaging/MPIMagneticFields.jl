@@ -1,12 +1,7 @@
 using MPIMagneticFields
 using Documenter
 
-DocMeta.setdocmeta!(
-  MPIMagneticFields,
-  :DocTestSetup,
-  :(using MPIMagneticFields);
-  recursive = true,
-)
+DocMeta.setdocmeta!(MPIMagneticFields, :DocTestSetup, :(using MPIMagneticFields); recursive = true)
 
 makedocs(;
   modules = [MPIMagneticFields],
@@ -21,7 +16,4 @@ makedocs(;
   pages = ["Home" => "index.md"],
 )
 
-deploydocs(;
-  repo = "github.com/MagneticParticleImaging/MPIMagneticFields.jl.git",
-  target = "build",
-)
+deploydocs(; repo = "github.com/MagneticParticleImaging/MPIMagneticFields.jl.git", target = "build")

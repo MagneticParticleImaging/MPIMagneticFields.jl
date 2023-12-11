@@ -7,20 +7,29 @@ function Base.getindex(field::AbstractMagneticField, args...)
     RotationalDimensionalityStyle(field),
     TranslationalDimensionalityStyle(field),
     field,
-    args...
+    args...,
   )
 end
 
 timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
-movementStylesCodeGeneration_ = (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
-dimensionalityStylesCodeGeneration_ = Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
+movementStylesCodeGeneration_ =
+  (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+dimensionalityStylesCodeGeneration_ =
+  Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
 
-for fieldTimeDependencyStyle in timeDependencyStylesCodeGeneration_
-  for fieldMovementStyle in movementStylesCodeGeneration_
-    for (fieldRotationalDimensionalityStyle, fieldRotationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
-      for (fieldTranslationalDimensionalityStyle, fieldTranslationalDimensionalityStyleLength) in dimensionalityStylesCodeGeneration_
-        if fieldMovementStyle == :NoMovement && (fieldRotationalDimensionalityStyleLength > 0 || fieldTranslationalDimensionalityStyleLength > 0)
-          funcBodyExpr = Expr(:call, :error, "If there is no movement, the rotational and translational dimensionality must be zero.")
+for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
+  for fieldMovementStyle ∈ movementStylesCodeGeneration_
+    for (fieldRotationalDimensionalityStyle, fieldRotationalDimensionalityStyleLength) ∈
+        dimensionalityStylesCodeGeneration_
+      for (fieldTranslationalDimensionalityStyle, fieldTranslationalDimensionalityStyleLength) ∈
+          dimensionalityStylesCodeGeneration_
+        if fieldMovementStyle == :NoMovement &&
+           (fieldRotationalDimensionalityStyleLength > 0 || fieldTranslationalDimensionalityStyleLength > 0)
+          funcBodyExpr = Expr(
+            :call,
+            :error,
+            "If there is no movement, the rotational and translational dimensionality must be zero.",
+          )
         else
           arguments = []
           if fieldTimeDependencyStyle == :TimeVarying
@@ -32,12 +41,15 @@ for fieldTimeDependencyStyle in timeDependencyStylesCodeGeneration_
           if fieldMovementStyle in rotationalStyles_
             if fieldMovementStyle in translationalStyles_
               δ = :(args[(end - $fieldTranslationalDimensionalityStyleLength + 1):end])
-              ϕ = :(args[(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength + 1):(end - $fieldTranslationalDimensionalityStyleLength)])
+              ϕ =
+                :(args[(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength + 1):(end - $fieldTranslationalDimensionalityStyleLength)])
 
               if fieldTimeDependencyStyle == :TimeVarying
-                r = :(args[2:(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength)])
+                r =
+                  :(args[2:(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength)])
               else
-                r = :(args[1:(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength)])
+                r =
+                  :(args[1:(end - $fieldTranslationalDimensionalityStyleLength - $fieldRotationalDimensionalityStyleLength)])
               end
 
               push!(arguments, Expr(:call, :collect, r))
@@ -87,8 +99,9 @@ for fieldTimeDependencyStyle in timeDependencyStylesCodeGeneration_
             ::RotationalDimensionalityStyle{$fieldRotationalDimensionalityStyle},
             ::TranslationalDimensionalityStyle{$fieldTranslationalDimensionalityStyle},
             field::AbstractMagneticField,
-            args...)
-            $funcBodyExpr
+            args...,
+          )
+            return $funcBodyExpr
           end
         end
       end

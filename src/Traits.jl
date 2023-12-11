@@ -29,8 +29,7 @@ struct MixedFieldDefinition <: FieldDefinitionStyle end
 struct OtherFieldDefinition <: FieldDefinitionStyle end
 
 export FieldDefinitionStyle
-FieldDefinitionStyle(::AbstractMagneticField)::FieldDefinitionStyle =
-  MethodBasedFieldDefinition()
+FieldDefinitionStyle(::AbstractMagneticField)::FieldDefinitionStyle = MethodBasedFieldDefinition()
 
 export FieldTimeDependencyStyle, TimeVarying, TimeConstant
 abstract type FieldTimeDependencyStyle end
@@ -48,8 +47,7 @@ isTimeVarying(field::AbstractMagneticField) = isTimeVarying(FieldTimeDependencyS
 isTimeVarying(::TimeVarying) = true
 isTimeVarying(::TimeConstant) = false
 
-export GradientFieldStyle,
-  FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
+export GradientFieldStyle, FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
 abstract type GradientFieldStyle end
 struct FFPGradientField <: GradientFieldStyle end
 struct FFLGradientField <: GradientFieldStyle end
@@ -98,9 +96,7 @@ Base.length(::Type{ThreeDimensional}) = 3
 
 export MovementDimensionalityStyle
 abstract type MovementDimensionalityStyle{T <: DimensionalityStyle} end
-function Base.length(::Type{<:MovementDimensionalityStyle{T}}) where {T <: DimensionalityStyle}
-  return length(T)
-end
+Base.length(::Type{<:MovementDimensionalityStyle{T}}) where {T <: DimensionalityStyle} = length(T)
 
 export RotationalDimensionalityStyle
 struct RotationalDimensionalityStyle{T <: DimensionalityStyle} <: MovementDimensionalityStyle{T} end

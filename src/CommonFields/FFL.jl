@@ -9,6 +9,53 @@ FieldTimeDependencyStyle(::IdealXYFFL) = TimeConstant()
 GradientFieldStyle(::IdealXYFFL) = FFLGradientField()
 FieldMovementStyle(::IdealXYFFL) = RotationalMovement()
 
-function value_(field::IdealXYFFL, r, ϕ)
-  return [-sin(ϕ)^2 -sin(ϕ)*cos(ϕ) 0; -sin(ϕ)*cos(ϕ) -cos(ϕ)^2 0; 0 0 1] * r .* field.gradient
+function value_(field::IdealXYRotatedFFL, r, ϕ)
+  sincos_ = sincos(-ϕ) # Rotates clockwise
+  mat =
+    SMatrix{3, 3}(
+      1 / 2 - 1 / 2 * sincos_[2],
+      -1 / 2 * sincos_[1],
+      0,
+      -1 / 2 * sincos_[1],
+      1 / 2 + 1 / 2 * sincos_[2],
+      0,
+      0,
+      0,
+      1,
+    ) .* field.gradient
+  return mat * r
+end
+
+export IdealXYRotatedTranslatedFFL
+mutable struct IdealXYRotatedTranslatedFFL{GT} <: AbstractMagneticField where {GT <: Number}
+  gradient::GT
+end
+
+FieldStyle(::IdealXYRotatedTranslatedFFL) = GradientField()
+FieldDefinitionStyle(::IdealXYRotatedTranslatedFFL) = MethodBasedFieldDefinition()
+FieldTimeDependencyStyle(::IdealXYRotatedTranslatedFFL) = TimeConstant()
+GradientFieldStyle(::IdealXYRotatedTranslatedFFL) = FFLGradientField()
+FieldMovementStyle(::IdealXYRotatedTranslatedFFL) = RotationalTranslationalMovement()
+RotationalDimensionalityStyle(::IdealXYRotatedTranslatedFFL) = RotationalDimensionalityStyle{OneDimensional}()
+function TranslationalDimensionalityStyle(::IdealXYRotatedTranslatedFFL)
+  return TranslationalDimensionalityStyle{OneDimensional}()
+end
+
+function value_(field::IdealXYRotatedTranslatedFFL, r, ϕ, δ)
+  sincos_ = sincos(-2ϕ) # Rotates clockwise
+  mat =
+    SMatrix{3, 3}(
+      1 / 2 - 1 / 2 * sincos_[2],
+      -1 / 2 * sincos_[1],
+      0,
+      -1 / 2 * sincos_[1],
+      1 / 2 + 1 / 2 * sincos_[2],
+      0,
+      0,
+      0,
+      1,
+    ) .* field.gradient
+  sincos_ = sincos(ϕ)
+  shift = SVector{3}(sincos_[1], sincos_[2], 0) .* δ
+  return mat * r .+ shift
 end

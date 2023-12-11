@@ -4,7 +4,9 @@ using DocStringExtensions
 using LinearAlgebra
 
 export μ₀
-"Vacuum magnetic permeability for usage within the field definitions"
+"""
+Vacuum magnetic permeability for usage within the field definitions
+"""
 const μ₀ = 1.25663706212e-6
 
 export AbstractMagneticField
@@ -53,13 +55,7 @@ end
 
 #TODO: Shorten by generator function
 function value(::TimeConstant, field::AbstractMagneticField, args...; kwargs...)
-  return value(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    field,
-    args...;
-    kwargs...,
-  )
+  return value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, args...; kwargs...)
 end
 
 function value(
@@ -79,13 +75,8 @@ function value(
   kwargs...,
 ) where {T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      [r_...];
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...]; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -108,14 +99,8 @@ function value(
   kwargs...,
 ) where {T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      [r_...],
-      ϕ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], ϕ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -138,14 +123,8 @@ function value(
   kwargs...,
 ) where {T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      [r_...],
-      δ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], δ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -170,26 +149,13 @@ function value(
   kwargs...,
 ) where {T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      [r_...],
-      ϕ,
-      δ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, [r_...], ϕ, δ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
 function value(::TimeVarying, field::AbstractMagneticField, args...; kwargs...)
-  return value(
-    FieldTimeDependencyStyle(field),
-    FieldMovementStyle(field),
-    field,
-    args...;
-    kwargs...,
-  )
+  return value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, args...; kwargs...)
 end
 
 function value(
@@ -211,14 +177,8 @@ function value(
   kwargs...,
 ) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      t,
-      [r_...];
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...]; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -243,15 +203,8 @@ function value(
   kwargs...,
 ) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      t,
-      [r_...],
-      ϕ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], ϕ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -276,15 +229,8 @@ function value(
   kwargs...,
 ) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      t,
-      [r_...],
-      δ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], δ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
@@ -311,16 +257,8 @@ function value(
   kwargs...,
 ) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
   return [
-    value(
-      FieldTimeDependencyStyle(field),
-      FieldMovementStyle(field),
-      field,
-      t,
-      [r_...],
-      ϕ,
-      δ;
-      kwargs...,
-    ) for r_ ∈ Iterators.product(r...)
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...], ϕ, δ; kwargs...) for
+    r_ ∈ Iterators.product(r...)
   ]
 end
 
