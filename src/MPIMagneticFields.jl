@@ -263,8 +263,33 @@ function value(
   ]
 end
 
+function value(
+  ::TimeVarying,
+  ::SequencedMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT;
+  kwargs...,
+) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
+  return value_(field, t, r; kwargs...)
+end
+function value(
+  ::TimeVarying,
+  ::SequencedMovement,
+  field::AbstractMagneticField,
+  t::VT,
+  r::PT;
+  kwargs...,
+) where {VT <: Number, T <: Any, PT <: AbstractVector{T}}
+  return [
+    value(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field, t, [r_...]; kwargs...) for
+    r_ ∈ Iterators.product(r...)
+  ]
+end
+
 include("Common.jl")
 include("Superposition.jl")
+include("Sequence.jl")
 include("CommonFields/CommonFields.jl")
 include("Experimental.jl")
 

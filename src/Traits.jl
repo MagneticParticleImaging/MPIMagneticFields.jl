@@ -47,28 +47,30 @@ isTimeVarying(field::AbstractMagneticField) = isTimeVarying(FieldTimeDependencyS
 isTimeVarying(::TimeVarying) = true
 isTimeVarying(::TimeConstant) = false
 
-export GradientFieldStyle, FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
+export GradientFieldStyle, NoGradientField, FFPGradientField, FFLGradientField, MixedGradientField, OtherGradientField
 abstract type GradientFieldStyle end
+struct NoGradientField <: GradientFieldStyle end
 struct FFPGradientField <: GradientFieldStyle end
 struct FFLGradientField <: GradientFieldStyle end
 struct MixedGradientField <: GradientFieldStyle end
 struct OtherGradientField <: GradientFieldStyle end
 
 export GradientFieldStyle
-function GradientFieldStyle(field::AbstractMagneticField)
-  return FieldStyle(field) == GradientField ? OtherGradientField() : nothing
+function GradientFieldStyle(field::AbstractMagneticField)::GradientFieldStyle
+  return FieldStyle(field) == GradientField ? OtherGradientField() : NoGradientField()
 end
 
 export FieldMovementStyle,
-  NoMovement, RotationalMovement, TranslationalMovement, RotationalTranslationalMovement
+  NoMovement, SequencedMovement, RotationalMovement, TranslationalMovement, RotationalTranslationalMovement
 abstract type FieldMovementStyle end
 struct NoMovement <: FieldMovementStyle end
+struct SequencedMovement <: FieldMovementStyle end
 struct RotationalMovement <: FieldMovementStyle end
 struct TranslationalMovement <: FieldMovementStyle end
 struct RotationalTranslationalMovement <: FieldMovementStyle end
 
 export FieldMovementStyle
-FieldMovementStyle(::AbstractMagneticField) = NoMovement()
+FieldMovementStyle(::AbstractMagneticField)::FieldMovementStyle = NoMovement()
 
 export isRotatable
 isRotatable(field::AbstractMagneticField) = isRotatable(FieldMovementStyle(field))

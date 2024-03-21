@@ -13,7 +13,7 @@ end
 
 timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
 movementStylesCodeGeneration_ =
-  (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+  (:NoMovement, :SequencedMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
 dimensionalityStylesCodeGeneration_ =
   Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
 
