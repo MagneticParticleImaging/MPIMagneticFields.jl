@@ -54,9 +54,10 @@ function FieldMovementStyle(field::SuperimposedField)
 end
 
 movementStylesCodeGeneration_ =
-  (:NoMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+  (:NoMovement, :SequencedMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
 movementStylesCodeGenerationPrecedence_ = Dict{Symbol, Int64}(
   :NoMovement => 0,
+  :SequencedMovement => 0,
   :RotationalMovement => 1,
   :TranslationalMovement => 1,
   :RotationalTranslationalMovement => 2,
