@@ -101,7 +101,7 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
             field::AbstractMagneticField,
             args...,
           )
-            return $funcBodyExpr
+            $funcBodyExpr
           end
         end
       end

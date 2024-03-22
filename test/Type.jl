@@ -1,8 +1,8 @@
 @testset "Type" begin
   @testset "Defaults" begin
-    mutable struct TestField <: AbstractMagneticField end
+    mutable struct TypeDefaultTestField <: AbstractMagneticField end
 
-    testField = TestField()
+    testField = TypeDefaultTestField()
     @test_throws ErrorException value(testField, [0, 0, 0])
   end
 

@@ -15,6 +15,7 @@ JuliaFormatter = "1.0"
 LinearAlgebra = "1"
 StaticArrays = "1.5"
 Test = "1"
+Waveforms = "0.1"
 julia = "1"
 
 [extras]
@@ -22,6 +23,7 @@ Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Waveforms = "cb13b1c6-351e-5134-b3ad-d6a530956a82"
 
 [targets]
-test = ["Aqua", "JuliaFormatter", "LinearAlgebra", "Test"]
+test = ["Aqua", "JuliaFormatter", "LinearAlgebra", "Test", "Waveforms"]

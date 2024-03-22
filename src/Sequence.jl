@@ -36,26 +36,41 @@ isTranslatable(field::SequencedField) = false # isTranslatable(field.field)
 RotationalDimensionalityStyle(field::SequencedField) = RotationalDimensionalityStyle{ZeroDimensional}() # RotationalDimensionalityStyle(field.field)
 TranslationalDimensionalityStyle(field::SequencedField) = TranslationalDimensionalityStyle{ZeroDimensional}() # TranslationalDimensionalityStyle(field.field)
 
-function value_(field::SequencedField, t, r)
-  if isTimeVarying(field.field)
-    if isRotatable(field.field) && isTranslatable(field.field)
-      value(field.field, t, r, field.rotation(t), field-translation(t))
-    elseif isRotatable(field.field)
-      value(field.field, t, r, field.rotation(t))
-    elseif isTranslatable(field.field)
-      value(field.field, t, r, field-translation(t))
-    else
-      value(field.field, t, r)
+value_(field::SequencedField, t, r) = value_(FieldTimeDependencyStyle(field.field), FieldMovementStyle(field.field), field, t, r)
+
+for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
+  for fieldMovementStyle ∈ movementStylesCodeGeneration_
+    arguments = []
+
+    if fieldTimeDependencyStyle == :TimeVarying
+      push!(arguments, :t)
     end
-  else
-    if isRotatable(field.field) && isTranslatable(field.field)
-      value(field.field, r, field.rotation(t), field-translation(t))
-    elseif isRotatable(field.field)
-      value(field.field, r, field.rotation(t))
-    elseif isTranslatable(field.field)
-      value(field.field, r, field-translation(t))
+    push!(arguments, :r)
+
+    rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
+    translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
+    if fieldMovementStyle in rotationalStyles_
+      if fieldMovementStyle in translationalStyles_
+        push!(arguments, :(field.rotation(t)))
+        push!(arguments, :(field.translation(t)))
+      else
+        push!(arguments, :(field.rotation(t)))
+      end
     else
-      value(field.field, r)
+      if fieldMovementStyle in translationalStyles_
+        push!(arguments, :(field.translation(t)))
+      else
+        # NOP
+      end
+    end
+
+    funcBody = Expr(:call, :value_, :(field.field), arguments...)
+    funcBodyExpr = Expr(:return, funcBody)
+
+    @eval begin
+      function value_(::$fieldTimeDependencyStyle, ::$fieldMovementStyle, field::SequencedField, t, r; kwargs...)
+        $funcBodyExpr
+      end
     end
   end
 end

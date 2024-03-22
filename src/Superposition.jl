@@ -247,7 +247,7 @@ for fieldATimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
                     args...;
                     kwargs...,
                   )
-                    return $funcBodyExpr
+                    $funcBodyExpr
                   end
                 end
               end

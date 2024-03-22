@@ -1,14 +1,15 @@
-@testset "Traits" begin
-  @testset "Defaults" begin
-    mutable struct TestField <: AbstractMagneticField end
+@testset "Sequence" begin
+  @testset "Basics" begin
+    testField = SequencedField(IdealXYRotatedFFL(1.0); rotation = t -> sin.(2π * 2 * t))
 
-    testField = TestField()
-
-    @test FieldStyle(testField) isa OtherField
+    @test FieldStyle(testField) isa GradientField
     @test FieldDefinitionStyle(testField) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(testField) isa TimeConstant
-    @test GradientFieldStyle(testField) isa NoGradientField
-    @test FieldMovementStyle(testField) isa NoMovement
+    @test GradientFieldStyle(testField) isa FFLGradientField
+    @test FieldMovementStyle(testField) isa SequencedMovement
+
+    @test isRotatable(testField) == false
+    @test isTranslatable(testField) == false
 
     @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
     @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
@@ -23,14 +24,21 @@
     MPIMagneticFields.GradientFieldStyle(::RotationalTestFieldImplemented) = FFLGradientField()
     MPIMagneticFields.FieldMovementStyle(::RotationalTestFieldImplemented) = RotationalMovement()
 
-    testField = RotationalTestFieldImplemented()
+    MPIMagneticFields.value_(field::RotationalTestFieldImplemented, t, r, ϕ) = ϕ
+
+    f = 1
+    testField = SequencedField(RotationalTestFieldImplemented(); rotation = t -> sawtoothwave.(2π * f * t))
 
     @test isTimeVarying(testField) == true
-    @test isRotatable(testField) == true
+    @test isRotatable(testField) == false
     @test isTranslatable(testField) == false
 
-    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
     @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
+
+    @test isapprox.(value(testField, 0, [0, 0, 0]), 0, atol = 1e-10)
+    @test isapprox.(value(testField, 0.5, [0, 0, 0]), 1, atol = 1e-10)
+    @test isapprox.(value(testField, 1, [0, 0, 0]), 0, atol = 1e-10)
   end
 
   @testset "Implemented translational" begin
@@ -42,14 +50,21 @@
     MPIMagneticFields.GradientFieldStyle(::TranslationalTestFieldImplemented) = FFLGradientField()
     MPIMagneticFields.FieldMovementStyle(::TranslationalTestFieldImplemented) = TranslationalMovement()
 
-    testField = TranslationalTestFieldImplemented()
+    MPIMagneticFields.value_(field::TranslationalTestFieldImplemented, t, r, δ) = δ
+
+    f = 1
+    testField = SequencedField(TranslationalTestFieldImplemented(); translation = t -> sawtoothwave.(2π * f * t))
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == false
-    @test isTranslatable(testField) == true
+    @test isTranslatable(testField) == false
 
     @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
-    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
+
+    @test isapprox.(value(testField, 0, [0, 0, 0]), 0, atol = 1e-10)
+    @test isapprox.(value(testField, 0.5, [0, 0, 0]), 1, atol = 1e-10)
+    @test isapprox.(value(testField, 1, [0, 0, 0]), 0, atol = 1e-10)
   end
 
   @testset "Implemented rotational and translational" begin
@@ -61,25 +76,24 @@
     MPIMagneticFields.GradientFieldStyle(::RotationalTranslationalTestFieldImplemented) = FFLGradientField()
     MPIMagneticFields.FieldMovementStyle(::RotationalTranslationalTestFieldImplemented) = RotationalTranslationalMovement()
 
-    testField = RotationalTranslationalTestFieldImplemented()
+    MPIMagneticFields.value_(field::RotationalTranslationalTestFieldImplemented, t, r, ϕ, δ) = (ϕ, δ)
+
+    f = 1
+    testField = SequencedField(
+      TestFieldImplemented();
+      rotation = t -> sawtoothwave.(2π * f * t),
+      translation = t -> sawtoothwave.(2π * f * t),
+    )
 
     @test isTimeVarying(testField) == true
-    @test isRotatable(testField) == true
-    @test isTranslatable(testField) == true
+    @test isRotatable(testField) == false
+    @test isTranslatable(testField) == false
 
-    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{OneDimensional}
-    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ThreeDimensional}
-  end
+    @test RotationalDimensionalityStyle(testField) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(testField) isa TranslationalDimensionalityStyle{ZeroDimensional}
 
-  @testset "Movement dimensionality styles" begin
-    @test length(RotationalDimensionalityStyle{ZeroDimensional}) == 0
-    @test length(RotationalDimensionalityStyle{OneDimensional}) == 1
-    @test length(RotationalDimensionalityStyle{TwoDimensional}) == 2
-    @test length(RotationalDimensionalityStyle{ThreeDimensional}) == 3
-
-    @test length(TranslationalDimensionalityStyle{ZeroDimensional}) == 0
-    @test length(TranslationalDimensionalityStyle{OneDimensional}) == 1
-    @test length(TranslationalDimensionalityStyle{TwoDimensional}) == 2
-    @test length(TranslationalDimensionalityStyle{ThreeDimensional}) == 3
+    @test all(isapprox.(value(testField, 0, [0, 0, 0]), (0, 0), atol = 1e-10))
+    @test all(isapprox.(value(testField, 0.5, [0, 0, 0]), (1, 1), atol = 1e-10))
+    @test all(isapprox.(value(testField, 1, [0, 0, 0]), (0, 0), atol = 1e-10))
   end
 end
