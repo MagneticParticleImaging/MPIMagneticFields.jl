@@ -28,6 +28,7 @@ isCIRun =
   include("Type.jl")
   include("Traits.jl")
   include("Common.jl")
+  include("Sequence.jl")
   include("Superposition.jl")
   include("CommonFields/CommonFields.jl")
   include("Experimental.jl")
