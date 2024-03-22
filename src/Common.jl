@@ -11,12 +11,6 @@ function Base.getindex(field::AbstractMagneticField, args...)
   )
 end
 
-timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
-movementStylesCodeGeneration_ =
-  (:NoMovement, :SequencedMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
-dimensionalityStylesCodeGeneration_ =
-  Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
-
 for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
   for fieldMovementStyle ∈ movementStylesCodeGeneration_
     for (fieldRotationalDimensionalityStyle, fieldRotationalDimensionalityStyleLength) ∈
@@ -36,8 +30,6 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
             push!(arguments, :(args[1]))
           end
 
-          rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
-          translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
           if fieldMovementStyle in rotationalStyles_
             if fieldMovementStyle in translationalStyles_
               δ = :(args[(end - $fieldTranslationalDimensionalityStyleLength + 1):end])

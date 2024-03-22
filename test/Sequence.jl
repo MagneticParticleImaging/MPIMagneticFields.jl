@@ -16,18 +16,18 @@
   end
 
   @testset "Implemented rotational" begin
-    mutable struct RotationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct SequenceRotationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::RotationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::RotationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::RotationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::RotationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::RotationalTestFieldImplemented) = RotationalMovement()
+    MPIMagneticFields.FieldStyle(::SequenceRotationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::SequenceRotationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::SequenceRotationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::SequenceRotationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::SequenceRotationalTestFieldImplemented) = RotationalMovement()
 
-    MPIMagneticFields.value_(field::RotationalTestFieldImplemented, t, r, ϕ) = ϕ
+    MPIMagneticFields.value_(field::SequenceRotationalTestFieldImplemented, t, r, ϕ) = ϕ
 
     f = 1
-    testField = SequencedField(RotationalTestFieldImplemented(); rotation = t -> sawtoothwave.(2π * f * t))
+    testField = SequencedField(SequenceRotationalTestFieldImplemented(); rotation = t -> sawtoothwave.(2π * f * t))
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == false
@@ -42,18 +42,18 @@
   end
 
   @testset "Implemented translational" begin
-    mutable struct TranslationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct SequenceTranslationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::TranslationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::TranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::TranslationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::TranslationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::TranslationalTestFieldImplemented) = TranslationalMovement()
+    MPIMagneticFields.FieldStyle(::SequenceTranslationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::SequenceTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::SequenceTranslationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::SequenceTranslationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::SequenceTranslationalTestFieldImplemented) = TranslationalMovement()
 
-    MPIMagneticFields.value_(field::TranslationalTestFieldImplemented, t, r, δ) = δ
+    MPIMagneticFields.value_(field::SequenceTranslationalTestFieldImplemented, t, r, δ) = δ
 
     f = 1
-    testField = SequencedField(TranslationalTestFieldImplemented(); translation = t -> sawtoothwave.(2π * f * t))
+    testField = SequencedField(SequenceTranslationalTestFieldImplemented(); translation = t -> sawtoothwave.(2π * f * t))
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == false
@@ -68,19 +68,19 @@
   end
 
   @testset "Implemented rotational and translational" begin
-    mutable struct RotationalTranslationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct SequenceRotationalTranslationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::RotationalTranslationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::RotationalTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::RotationalTranslationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::RotationalTranslationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::RotationalTranslationalTestFieldImplemented) = RotationalTranslationalMovement()
+    MPIMagneticFields.FieldStyle(::SequenceRotationalTranslationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::SequenceRotationalTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::SequenceRotationalTranslationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::SequenceRotationalTranslationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::SequenceRotationalTranslationalTestFieldImplemented) = RotationalTranslationalMovement()
 
-    MPIMagneticFields.value_(field::RotationalTranslationalTestFieldImplemented, t, r, ϕ, δ) = (ϕ, δ)
+    MPIMagneticFields.value_(field::SequenceRotationalTranslationalTestFieldImplemented, t, r, ϕ, δ) = (ϕ, δ)
 
     f = 1
     testField = SequencedField(
-      RotationalTranslationalTestFieldImplemented();
+      SequenceRotationalTranslationalTestFieldImplemented();
       rotation = t -> sawtoothwave.(2π * f * t),
       translation = t -> sawtoothwave.(2π * f * t),
     )

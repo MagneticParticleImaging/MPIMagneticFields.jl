@@ -46,9 +46,7 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
       push!(arguments, :t)
     end
     push!(arguments, :r)
-
-    rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
-    translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
+    
     if fieldMovementStyle in rotationalStyles_
       if fieldMovementStyle in translationalStyles_
         push!(arguments, :(field.rotation(t)))

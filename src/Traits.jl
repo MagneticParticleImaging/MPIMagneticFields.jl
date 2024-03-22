@@ -130,6 +130,22 @@ function TranslationalDimensionalityStyle(::RotationalTranslationalMovement, fie
   return TranslationalDimensionalityStyle{ThreeDimensional}()
 end
 
+# For code generation
+timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
+movementStylesCodeGeneration_ =
+  (:NoMovement, :SequencedMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
+movementStylesCodeGenerationPrecedence_ = Dict{Symbol, Int64}(
+  :NoMovement => 0,
+  :SequencedMovement => 0,
+  :RotationalMovement => 1,
+  :TranslationalMovement => 1,
+  :RotationalTranslationalMovement => 2,
+)
+rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
+translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
+dimensionalityStylesCodeGeneration_ =
+  Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
+
 # Note: The followig functions are not needed atm but I will leave them here for the case of future needs
 # listNumAdditionalParameters(field::AbstractMagneticField) = listNumAdditionalParameters(FieldTimeDependencyStyle(field), field)
 # listNumAdditionalParameters(::TimeConstant, field::AbstractMagneticField) = listNumAdditionalParameters(FieldTimeDependencyStyle(field), FieldMovementStyle(field), field)

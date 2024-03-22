@@ -53,15 +53,6 @@ function FieldMovementStyle(field::SuperimposedField)
   return FieldMovementStyle(FieldMovementStyle(field.fieldA), FieldMovementStyle(field.fieldB), field)
 end
 
-movementStylesCodeGeneration_ =
-  (:NoMovement, :SequencedMovement, :RotationalMovement, :TranslationalMovement, :RotationalTranslationalMovement)
-movementStylesCodeGenerationPrecedence_ = Dict{Symbol, Int64}(
-  :NoMovement => 0,
-  :SequencedMovement => 0,
-  :RotationalMovement => 1,
-  :TranslationalMovement => 1,
-  :RotationalTranslationalMovement => 2,
-)
 for fieldAMovementStyle ∈ movementStylesCodeGeneration_
   for fieldBMovementStyle ∈ movementStylesCodeGeneration_
     if fieldAMovementStyle == fieldBMovementStyle
@@ -123,9 +114,6 @@ function value(field::SuperimposedField, args...; kwargs...)
   )
 end
 
-dimensionalityStylesCodeGeneration_ =
-  Dict(:ZeroDimensional => 0, :OneDimensional => 1, :TwoDimensional => 2, :ThreeDimensional => 3)
-timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
 for fieldATimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
   for fieldBTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
     for fieldAMovementStyle ∈ movementStylesCodeGeneration_
@@ -156,8 +144,6 @@ for fieldATimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
                     push!(argumentsB, :(args[1]))
                   end
 
-                  rotationalStyles_ = [:RotationalMovement, :RotationalTranslationalMovement]
-                  translationalStyles_ = [:TranslationalMovement, :RotationalTranslationalMovement]
                   if fieldAMovementStyle in rotationalStyles_ || fieldBMovementStyle in rotationalStyles_
                     if fieldAMovementStyle in translationalStyles_ ||
                        fieldBMovementStyle in translationalStyles_

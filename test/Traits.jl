@@ -15,15 +15,15 @@
   end
 
   @testset "Implemented rotational" begin
-    mutable struct RotationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct TraitsRotationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::RotationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::RotationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::RotationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::RotationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::RotationalTestFieldImplemented) = RotationalMovement()
+    MPIMagneticFields.FieldStyle(::TraitsRotationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TraitsRotationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TraitsRotationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TraitsRotationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TraitsRotationalTestFieldImplemented) = RotationalMovement()
 
-    testField = RotationalTestFieldImplemented()
+    testField = TraitsRotationalTestFieldImplemented()
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == true
@@ -34,15 +34,15 @@
   end
 
   @testset "Implemented translational" begin
-    mutable struct TranslationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct TraitsTranslationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::TranslationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::TranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::TranslationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::TranslationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::TranslationalTestFieldImplemented) = TranslationalMovement()
+    MPIMagneticFields.FieldStyle(::TraitsTranslationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TraitsTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TraitsTranslationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TraitsTranslationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TraitsTranslationalTestFieldImplemented) = TranslationalMovement()
 
-    testField = TranslationalTestFieldImplemented()
+    testField = TraitsTranslationalTestFieldImplemented()
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == false
@@ -53,15 +53,15 @@
   end
 
   @testset "Implemented rotational and translational" begin
-    mutable struct RotationalTranslationalTestFieldImplemented <: AbstractMagneticField end
+    mutable struct TraitsRotationalTranslationalTestFieldImplemented <: AbstractMagneticField end
 
-    MPIMagneticFields.FieldStyle(::RotationalTranslationalTestFieldImplemented) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::RotationalTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::RotationalTranslationalTestFieldImplemented) = TimeVarying()
-    MPIMagneticFields.GradientFieldStyle(::RotationalTranslationalTestFieldImplemented) = FFLGradientField()
-    MPIMagneticFields.FieldMovementStyle(::RotationalTranslationalTestFieldImplemented) = RotationalTranslationalMovement()
+    MPIMagneticFields.FieldStyle(::TraitsRotationalTranslationalTestFieldImplemented) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::TraitsRotationalTranslationalTestFieldImplemented) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TraitsRotationalTranslationalTestFieldImplemented) = TimeVarying()
+    MPIMagneticFields.GradientFieldStyle(::TraitsRotationalTranslationalTestFieldImplemented) = FFLGradientField()
+    MPIMagneticFields.FieldMovementStyle(::TraitsRotationalTranslationalTestFieldImplemented) = RotationalTranslationalMovement()
 
-    testField = RotationalTranslationalTestFieldImplemented()
+    testField = TraitsRotationalTranslationalTestFieldImplemented()
 
     @test isTimeVarying(testField) == true
     @test isRotatable(testField) == true
