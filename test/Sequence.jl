@@ -4,7 +4,7 @@
 
     @test FieldStyle(testField) isa GradientField
     @test FieldDefinitionStyle(testField) isa MethodBasedFieldDefinition
-    @test FieldTimeDependencyStyle(testField) isa TimeConstant
+    @test FieldTimeDependencyStyle(testField) isa TimeVarying
     @test GradientFieldStyle(testField) isa FFLGradientField
     @test FieldMovementStyle(testField) isa SequencedMovement
 
@@ -80,7 +80,7 @@
 
     f = 1
     testField = SequencedField(
-      TestFieldImplemented();
+      RotationalTranslationalTestFieldImplemented();
       rotation = t -> sawtoothwave.(2π * f * t),
       translation = t -> sawtoothwave.(2π * f * t),
     )
