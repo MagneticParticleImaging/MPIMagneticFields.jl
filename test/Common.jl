@@ -1,60 +1,60 @@
 @testset "Common" begin
   @testset "Indexing" begin
     @testset "No movement" begin
-      mutable struct TestIndexingIdealHomogeneousField{AT, DT} <:
+      mutable struct NoMovementTestIndexingIdealHomogeneousField{AT, DT} <:
                      AbstractMagneticField where {AT <: Number, U <: Number, DT <: AbstractArray{U}}
         amplitude::AT
         direction::DT
       end
 
-      MPIMagneticFields.FieldStyle(::TestIndexingIdealHomogeneousField) = HomogeneousField()
-      function MPIMagneticFields.FieldDefinitionStyle(::TestIndexingIdealHomogeneousField)
+      MPIMagneticFields.FieldStyle(::NoMovementTestIndexingIdealHomogeneousField) = HomogeneousField()
+      function MPIMagneticFields.FieldDefinitionStyle(::NoMovementTestIndexingIdealHomogeneousField)
         return MethodBasedFieldDefinition()
       end
-      MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingIdealHomogeneousField) = TimeConstant()
-      MPIMagneticFields.FieldMovementStyle(::TestIndexingIdealHomogeneousField) = NoMovement()
+      MPIMagneticFields.FieldTimeDependencyStyle(::NoMovementTestIndexingIdealHomogeneousField) = TimeConstant()
+      MPIMagneticFields.FieldMovementStyle(::NoMovementTestIndexingIdealHomogeneousField) = NoMovement()
 
-      function MPIMagneticFields.value_(field::TestIndexingIdealHomogeneousField, r)
+      function MPIMagneticFields.value_(field::NoMovementTestIndexingIdealHomogeneousField, r)
         return normalize(field.direction) .* field.amplitude
       end
 
-      field = TestIndexingIdealHomogeneousField(1, [1, 0, 0])
+      field = NoMovementTestIndexingIdealHomogeneousField(1, [1, 0, 0])
 
       @test all(field[1, 0, 0] .≈ [1, 0, 0])
       @test all(field[0.5, 0, 0] .≈ [1, 0, 0])
 
-      @test Base.IndexStyle(TestIndexingIdealHomogeneousField) isa IndexCartesian
+      @test Base.IndexStyle(NoMovementTestIndexingIdealHomogeneousField) isa IndexCartesian
     end
 
     @testset "Rotational movement" begin
-      mutable struct TestIndexingIdealHomogeneousField{AT, DT} <:
+      mutable struct RotationalTestIndexingIdealHomogeneousField{AT, DT} <:
                      AbstractMagneticField where {AT <: Number, U <: Number, DT <: AbstractArray{U}}
         amplitude::AT
         direction::DT
       end
 
-      MPIMagneticFields.FieldStyle(::TestIndexingIdealHomogeneousField) = HomogeneousField()
-      function MPIMagneticFields.FieldDefinitionStyle(::TestIndexingIdealHomogeneousField)
+      MPIMagneticFields.FieldStyle(::RotationalTestIndexingIdealHomogeneousField) = HomogeneousField()
+      function MPIMagneticFields.FieldDefinitionStyle(::RotationalTestIndexingIdealHomogeneousField)
         return MethodBasedFieldDefinition()
       end
-      MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingIdealHomogeneousField) = TimeConstant()
-      MPIMagneticFields.FieldMovementStyle(::TestIndexingIdealHomogeneousField) = NoMovement()
+      MPIMagneticFields.FieldTimeDependencyStyle(::RotationalTestIndexingIdealHomogeneousField) = TimeConstant()
+      MPIMagneticFields.FieldMovementStyle(::RotationalTestIndexingIdealHomogeneousField) = NoMovement()
 
-      function MPIMagneticFields.value_(field::TestIndexingIdealHomogeneousField, r)
+      function MPIMagneticFields.value_(field::RotationalTestIndexingIdealHomogeneousField, r)
         return normalize(field.direction) .* field.amplitude
       end
 
-      field = TestIndexingIdealHomogeneousField(1, [1, 0, 0])
+      field = RotationalTestIndexingIdealHomogeneousField(1, [1, 0, 0])
 
       @test all(field[1, 0, 0] .≈ [1, 0, 0])
       @test all(field[0.5, 0, 0] .≈ [1, 0, 0])
 
-      @test Base.IndexStyle(TestIndexingIdealHomogeneousField) isa IndexCartesian
+      @test Base.IndexStyle(RotationalTestIndexingIdealHomogeneousField) isa IndexCartesian
     end
   end
 
   @testset "Time-varying indexing" begin
-    mutable struct TestIdealHomogeneousFieldTimeVarying{AT, FT, DT} <: AbstractMagneticField where {
+    mutable struct TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying{AT, FT, DT} <: AbstractMagneticField where {
       AT <: Number,
       FT <: Number,
       U <: Number,
@@ -65,40 +65,44 @@
       direction::DT
     end
 
-    MPIMagneticFields.FieldStyle(::TestIdealHomogeneousFieldTimeVarying) = HomogeneousField()
-    function MPIMagneticFields.FieldDefinitionStyle(::TestIdealHomogeneousFieldTimeVarying)
+    MPIMagneticFields.FieldStyle(::TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying) = HomogeneousField()
+    function MPIMagneticFields.FieldDefinitionStyle(::TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying)
       return MethodBasedFieldDefinition()
     end
-    MPIMagneticFields.FieldTimeDependencyStyle(::TestIdealHomogeneousFieldTimeVarying) = TimeVarying()
-    MPIMagneticFields.FieldMovementStyle(::TestIdealHomogeneousFieldTimeVarying) = NoMovement()
+    MPIMagneticFields.FieldTimeDependencyStyle(::TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying) = NoMovement()
 
-    function MPIMagneticFields.value_(field::TestIdealHomogeneousFieldTimeVarying, t, r)
+    function MPIMagneticFields.value_(field::TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying, t, r)
       return normalize(field.direction) .* field.amplitude .* sin.(2π * field.frequency * t)
     end
 
-    field = TestIdealHomogeneousFieldTimeVarying(1, 1, [1, 0, 0])
+    field = TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying(1, 1, [1, 0, 0])
 
     @test all(field[1 / 4, 1, 0, 0] .≈ [1, 0, 0])
     @test all(field[1 / 4, 0.5, 0, 0] .≈ [1, 0, 0])
 
-    @test Base.IndexStyle(TestIdealHomogeneousFieldTimeVarying) isa IndexCartesian
+    @test Base.IndexStyle(TimeVaryingIndexingTestIdealHomogeneousFieldTimeVarying) isa IndexCartesian
   end
 
   @testset "Dispatch" begin
     for timeDependency ∈ [TimeConstant, TimeVarying]
       @testset "No movement ($timeDependency)" begin
-        struct TestIndexingNoMovement <: AbstractMagneticField end
-        MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingNoMovement) = timeDependency()
-        MPIMagneticFields.FieldMovementStyle(::TestIndexingNoMovement) = NoMovement()
-        MPIMagneticFields.value_(::TestIndexingNoMovement, args...) = args
+        structName = Symbol(string(timeDependency) * "TestIndexingNoMovement")
 
-        field = TestIndexingNoMovement()
-        t = 0
-        r = [0, 0, 0]
-        if timeDependency == TimeConstant
-          @test field[r...] == tuple(r)
-        elseif timeDependency == TimeVarying
-          @test field[t, r...] == tuple(t, r)
+        @eval begin
+          struct $structName <: AbstractMagneticField end
+          MPIMagneticFields.FieldTimeDependencyStyle(::$structName) = $timeDependency()
+          MPIMagneticFields.FieldMovementStyle(::$structName) = NoMovement()
+          MPIMagneticFields.value_(::$structName, args...) = args
+
+          field = $structName()
+          t = 0
+          r = [0, 0, 0]
+          if $timeDependency == TimeConstant
+            @test field[r...] == tuple(r)
+          elseif $timeDependency == TimeVarying
+            @test field[t, r...] == tuple(t, r)
+          end
         end
       end
 
@@ -108,25 +112,29 @@
         RotationalDimensionalityStyle{ThreeDimensional},
       ]
         @testset "Rotational movement ($timeDependency, $(rotationalDimensionalityStyle.parameters[1]))" begin
-          struct TestIndexingRotationalMovement <: AbstractMagneticField end
-          MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingRotationalMovement) = timeDependency()
-          MPIMagneticFields.FieldMovementStyle(::TestIndexingRotationalMovement) = RotationalMovement()
-          function MPIMagneticFields.RotationalDimensionalityStyle(
-            ::RotationalMovement,
-            field::TestIndexingRotationalMovement,
-          )
-            return rotationalDimensionalityStyle()
-          end
-          MPIMagneticFields.value_(::TestIndexingRotationalMovement, args...) = args
+          structName = Symbol(string(rotationalDimensionalityStyle.parameters[1]) * string(timeDependency) * "TestIndexingRotationalMovement")
 
-          field = TestIndexingRotationalMovement()
-          t = 0
-          r = [1, 2, 3]
-          ϕ = collect(4:(3 + length(rotationalDimensionalityStyle)))
-          if timeDependency == TimeConstant
-            @test field[r..., ϕ...] == tuple(r, ϕ)
-          elseif timeDependency == TimeVarying
-            @test field[t, r..., ϕ...] == tuple(t, r, ϕ)
+          @eval begin
+            struct $structName <: AbstractMagneticField end
+            MPIMagneticFields.FieldTimeDependencyStyle(::$structName) = $timeDependency()
+            MPIMagneticFields.FieldMovementStyle(::$structName) = RotationalMovement()
+            function MPIMagneticFields.RotationalDimensionalityStyle(
+              ::RotationalMovement,
+              field::$structName,
+            )
+              return $rotationalDimensionalityStyle()
+            end
+            MPIMagneticFields.value_(::$structName, args...) = args
+
+            field = $structName()
+            t = 0
+            r = [1, 2, 3]
+            ϕ = collect(4:(3 + length($rotationalDimensionalityStyle)))
+            if $timeDependency == TimeConstant
+              @test field[r..., ϕ...] == tuple(r, ϕ)
+            elseif $timeDependency == TimeVarying
+              @test field[t, r..., ϕ...] == tuple(t, r, ϕ)
+            end
           end
         end
       end
@@ -137,25 +145,29 @@
         TranslationalDimensionalityStyle{ThreeDimensional},
       ]
         @testset "Translational movement ($timeDependency, $(translationalDimensionalityStyle.parameters[1]))" begin
-          struct TestIndexingTranslationalMovement <: AbstractMagneticField end
-          MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingTranslationalMovement) = timeDependency()
-          MPIMagneticFields.FieldMovementStyle(::TestIndexingTranslationalMovement) = TranslationalMovement()
-          function MPIMagneticFields.TranslationalDimensionalityStyle(
-            ::TranslationalMovement,
-            field::TestIndexingTranslationalMovement,
-          )
-            return translationalDimensionalityStyle()
-          end
-          MPIMagneticFields.value_(::TestIndexingTranslationalMovement, args...) = args
+          structName = Symbol(string(translationalDimensionalityStyle.parameters[1]) * string(timeDependency) * "TestIndexingTranslationalMovement")
 
-          field = TestIndexingTranslationalMovement()
-          t = 0
-          r = [1, 2, 3]
-          δ = collect(4:(3 + length(translationalDimensionalityStyle)))
-          if timeDependency == TimeConstant
-            @test field[r..., δ...] == tuple(r, δ)
-          elseif timeDependency == TimeVarying
-            @test field[t, r..., δ...] == tuple(t, r, δ)
+          @eval begin
+            struct $structName <: AbstractMagneticField end
+            MPIMagneticFields.FieldTimeDependencyStyle(::$structName) = $timeDependency()
+            MPIMagneticFields.FieldMovementStyle(::$structName) = TranslationalMovement()
+            function MPIMagneticFields.TranslationalDimensionalityStyle(
+              ::TranslationalMovement,
+              field::$structName,
+            )
+              return $translationalDimensionalityStyle()
+            end
+            MPIMagneticFields.value_(::$structName, args...) = args
+
+            field = $structName()
+            t = 0
+            r = [1, 2, 3]
+            δ = collect(4:(3 + length($translationalDimensionalityStyle)))
+            if $timeDependency == TimeConstant
+              @test field[r..., δ...] == tuple(r, δ)
+            elseif $timeDependency == TimeVarying
+              @test field[t, r..., δ...] == tuple(t, r, δ)
+            end
           end
         end
       end
@@ -171,46 +183,50 @@
           TranslationalDimensionalityStyle{ThreeDimensional},
         ]
           @testset "Rotational and translational movement ($timeDependency, $(rotationalDimensionalityStyle.parameters[1]), $(translationalDimensionalityStyle.parameters[1]))" begin
-            struct TestIndexingRotationalTranslationalMovement <: AbstractMagneticField end
-            function MPIMagneticFields.FieldTimeDependencyStyle(::TestIndexingRotationalTranslationalMovement)
-              return timeDependency()
-            end
-            function MPIMagneticFields.FieldMovementStyle(::TestIndexingRotationalTranslationalMovement)
-              return RotationalTranslationalMovement()
-            end
-            function MPIMagneticFields.RotationalDimensionalityStyle(
-              ::RotationalMovement,
-              field::TestIndexingRotationalTranslationalMovement,
-            )
-              return rotationalDimensionalityStyle()
-            end
-            function MPIMagneticFields.RotationalDimensionalityStyle(
-              ::RotationalTranslationalMovement,
-              field::TestIndexingRotationalTranslationalMovement,
-            )
-              return rotationalDimensionalityStyle()
-            end
-            function MPIMagneticFields.TranslationalDimensionalityStyle(
-              ::RotationalTranslationalMovement,
-              field::TestIndexingRotationalTranslationalMovement,
-            )
-              return translationalDimensionalityStyle()
-            end
-            MPIMagneticFields.value_(::TestIndexingRotationalTranslationalMovement, args...) = args
+            structName = Symbol(string(rotationalDimensionalityStyle.parameters[1]) * "Rotation" * string(translationalDimensionalityStyle.parameters[1]) * "Translation" * string(timeDependency) * "TestIndexingRotationalTranslationalMovement")
 
-            field = TestIndexingRotationalTranslationalMovement()
-            t = 0
-            r = [1, 2, 3]
-            ϕ = collect(4:(3 + length(rotationalDimensionalityStyle)))
-            δ = collect(
-              (4 + length(rotationalDimensionalityStyle)):(3 + length(rotationalDimensionalityStyle) + length(
-                translationalDimensionalityStyle,
-              )),
-            )
-            if timeDependency == TimeConstant
-              @test field[r..., ϕ..., δ...] == tuple(r, ϕ, δ)
-            elseif timeDependency == TimeVarying
-              @test field[t, r..., ϕ..., δ...] == tuple(t, r, ϕ, δ)
+            @eval begin
+              struct $structName <: AbstractMagneticField end
+              function MPIMagneticFields.FieldTimeDependencyStyle(::$structName)
+                return $timeDependency()
+              end
+              function MPIMagneticFields.FieldMovementStyle(::$structName)
+                return RotationalTranslationalMovement()
+              end
+              function MPIMagneticFields.RotationalDimensionalityStyle(
+                ::RotationalMovement,
+                field::$structName,
+              )
+                return $rotationalDimensionalityStyle()
+              end
+              function MPIMagneticFields.RotationalDimensionalityStyle(
+                ::RotationalTranslationalMovement,
+                field::$structName,
+              )
+                return $rotationalDimensionalityStyle()
+              end
+              function MPIMagneticFields.TranslationalDimensionalityStyle(
+                ::RotationalTranslationalMovement,
+                field::$structName,
+              )
+                return $translationalDimensionalityStyle()
+              end
+              MPIMagneticFields.value_(::$structName, args...) = args
+
+              field = $structName()
+              t = 0
+              r = [1, 2, 3]
+              ϕ = collect(4:(3 + length($rotationalDimensionalityStyle)))
+              δ = collect(
+                (4 + length($rotationalDimensionalityStyle)):(3 + length($rotationalDimensionalityStyle) + length(
+                  $translationalDimensionalityStyle,
+                )),
+              )
+              if $timeDependency == TimeConstant
+                @test field[r..., ϕ..., δ...] == tuple(r, ϕ, δ)
+              elseif $timeDependency == TimeVarying
+                @test field[t, r..., ϕ..., δ...] == tuple(t, r, ϕ, δ)
+              end
             end
           end
         end

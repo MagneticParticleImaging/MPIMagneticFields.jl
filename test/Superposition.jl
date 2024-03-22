@@ -51,20 +51,20 @@
     end
 
     @testset "Negative" begin
-      mutable struct TestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
+      mutable struct NegativeTestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
         gradient::Vector{GT}
       end
-      MPIMagneticFields.FieldStyle(::TestIdealFFP) = GradientField()
-      MPIMagneticFields.FieldDefinitionStyle(::TestIdealFFP) = MethodBasedFieldDefinition()
-      MPIMagneticFields.FieldTimeDependencyStyle(::TestIdealFFP) = TimeConstant()
-      MPIMagneticFields.GradientFieldStyle(::TestIdealFFP) = FFPGradientField()
-      MPIMagneticFields.FieldMovementStyle(::TestIdealFFP) = NoMovement()
+      MPIMagneticFields.FieldStyle(::NegativeTestIdealFFP) = GradientField()
+      MPIMagneticFields.FieldDefinitionStyle(::NegativeTestIdealFFP) = MethodBasedFieldDefinition()
+      MPIMagneticFields.FieldTimeDependencyStyle(::NegativeTestIdealFFP) = TimeConstant()
+      MPIMagneticFields.GradientFieldStyle(::NegativeTestIdealFFP) = FFPGradientField()
+      MPIMagneticFields.FieldMovementStyle(::NegativeTestIdealFFP) = NoMovement()
 
-      MPIMagneticFields.value_(field::TestIdealFFP, r) = r .* field.gradient
+      MPIMagneticFields.value_(field::NegativeTestIdealFFP, r) = r .* field.gradient
 
-      field = TestIdealFFP([1, 1, 1])
+      field = NegativeTestIdealFFP([1, 1, 1])
 
-      @test field isa TestIdealFFP
+      @test field isa NegativeTestIdealFFP
       @test negative(field) isa NegativeField
       @test FieldStyle(field) isa GradientField
       @test FieldStyle(negative(field)) isa GradientField
@@ -99,7 +99,7 @@
       @test FieldStyle(superimposedField) isa HomogeneousField
       @test FieldDefinitionStyle(superimposedField) isa MethodBasedFieldDefinition
       @test FieldTimeDependencyStyle(superimposedField) isa TimeConstant
-      @test isnothing(GradientFieldStyle(superimposedField))
+      @test GradientFieldStyle(superimposedField) isa NoGradientField
 
       @test all(value(superimposedField, [1, 0, 0]) .≈ [1, -1, 0])
       @test all(value(superimposedField, [0.5, 0, 0]) .≈ [1, -1, 0])
@@ -169,38 +169,38 @@
   end
 
   @testset "Mixed field superposition" begin
-    mutable struct TestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
+    mutable struct MixedFieldTestIdealFFP{GT} <: AbstractMagneticField where {GT <: Number}
       gradient::Vector{GT}
     end
 
-    MPIMagneticFields.FieldStyle(::TestIdealFFP) = GradientField()
-    MPIMagneticFields.FieldDefinitionStyle(::TestIdealFFP) = MethodBasedFieldDefinition()
-    MPIMagneticFields.FieldTimeDependencyStyle(::TestIdealFFP) = TimeConstant()
-    MPIMagneticFields.GradientFieldStyle(::TestIdealFFP) = FFPGradientField()
-    MPIMagneticFields.FieldMovementStyle(::TestIdealFFP) = NoMovement()
+    MPIMagneticFields.FieldStyle(::MixedFieldTestIdealFFP) = GradientField()
+    MPIMagneticFields.FieldDefinitionStyle(::MixedFieldTestIdealFFP) = MethodBasedFieldDefinition()
+    MPIMagneticFields.FieldTimeDependencyStyle(::MixedFieldTestIdealFFP) = TimeConstant()
+    MPIMagneticFields.GradientFieldStyle(::MixedFieldTestIdealFFP) = FFPGradientField()
+    MPIMagneticFields.FieldMovementStyle(::MixedFieldTestIdealFFP) = NoMovement()
 
-    MPIMagneticFields.value_(field::TestIdealFFP, r) = r .* field.gradient
+    MPIMagneticFields.value_(field::MixedFieldTestIdealFFP, r) = r .* field.gradient
 
-    fieldA = TestIdealFFP([1, 1, 1])
+    fieldA = MixedFieldTestIdealFFP([1, 1, 1])
 
-    mutable struct TestSuperpositionIdealHomogeneousField{T, U} <:
+    mutable struct MixedFieldTestSuperpositionIdealHomogeneousField{T, U} <:
                    AbstractMagneticField where {T <: Number, U <: Number}
       amplitude::T
       direction::Vector{U}
     end
 
-    MPIMagneticFields.FieldStyle(::TestSuperpositionIdealHomogeneousField) = HomogeneousField()
-    function MPIMagneticFields.FieldDefinitionStyle(::TestSuperpositionIdealHomogeneousField)
+    MPIMagneticFields.FieldStyle(::MixedFieldTestSuperpositionIdealHomogeneousField) = HomogeneousField()
+    function MPIMagneticFields.FieldDefinitionStyle(::MixedFieldTestSuperpositionIdealHomogeneousField)
       return SymbolicBasedFieldDefinition()
     end
-    MPIMagneticFields.FieldTimeDependencyStyle(::TestSuperpositionIdealHomogeneousField) = TimeVarying()
-    MPIMagneticFields.FieldMovementStyle(::TestSuperpositionIdealHomogeneousField) = NoMovement()
+    MPIMagneticFields.FieldTimeDependencyStyle(::MixedFieldTestSuperpositionIdealHomogeneousField) = TimeVarying()
+    MPIMagneticFields.FieldMovementStyle(::MixedFieldTestSuperpositionIdealHomogeneousField) = NoMovement()
 
-    function MPIMagneticFields.value_(field::TestSuperpositionIdealHomogeneousField, r)
+    function MPIMagneticFields.value_(field::MixedFieldTestSuperpositionIdealHomogeneousField, r)
       return normalize(field.direction) .* field.amplitude
     end
 
-    fieldB = TestSuperpositionIdealHomogeneousField(1, [1, 0, 0])
+    fieldB = MixedFieldTestSuperpositionIdealHomogeneousField(1, [1, 0, 0])
 
     superimposedField = fieldA + fieldB
 
