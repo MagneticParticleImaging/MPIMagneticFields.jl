@@ -22,11 +22,6 @@ FieldTimeDependencyStyle(::FunctionDefinedHomogeneousField) = TimeVarying()
 
 value_(field::FunctionDefinedHomogeneousField, t, r) = field.function_(t)
 
-abstract type RotationPlane end
-struct XYRotationPlane <: RotationPlane end
-struct XZRotationPlane <: RotationPlane end
-struct YZRotationPlane <: RotationPlane end
-
 export IdealRotatedHomogeneousField
 mutable struct IdealRotatedHomogeneousField{RT, T} <: AbstractMagneticField where {RT <: RotationPlane, T <: Number}
   rotationPlane::RT

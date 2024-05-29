@@ -7,6 +7,8 @@ version = "0.0.7"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+Waveforms = "cb13b1c6-351e-5134-b3ad-d6a530956a82"
 
 [compat]
 Aqua = "0.8"
@@ -15,6 +17,7 @@ JuliaFormatter = "1.0"
 LinearAlgebra = "1"
 StaticArrays = "1.5"
 Test = "1"
+Unitful = "1.15"
 Waveforms = "0.1"
 julia = "1"
 
