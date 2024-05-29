@@ -47,9 +47,9 @@ FieldDefinitionStyle(::IdealRotatedHomogeneousField) = MethodBasedFieldDefinitio
 FieldTimeDependencyStyle(::IdealRotatedHomogeneousField) = TimeConstant()
 FieldMovementStyle(::IdealRotatedHomogeneousField) = RotationalMovement()
 
-value_(field::IdealRotatedHomogeneousField{XYRotationPlane, Number}, r, ϕ) = [sin(ϕ), cos(ϕ), 0] .* field.amplitude
-value_(field::IdealRotatedHomogeneousField{XZRotationPlane, Number}, r, ϕ) = [sin(ϕ), 0, cos(ϕ)] .* field.amplitude
-value_(field::IdealRotatedHomogeneousField{YZRotationPlane, Number}, r, ϕ) = [0, sin(ϕ), cos(ϕ)] .* field.amplitude
+value_(field::IdealRotatedHomogeneousField{XYRotationPlane, T}, r, ϕ) where {T <: Number} = [sin(ϕ), cos(ϕ), 0] .* field.amplitude
+value_(field::IdealRotatedHomogeneousField{XZRotationPlane, T}, r, ϕ) where {T <: Number} = [sin(ϕ), 0, cos(ϕ)] .* field.amplitude
+value_(field::IdealRotatedHomogeneousField{YZRotationPlane, T}, r, ϕ) where {T <: Number} = [0, sin(ϕ), cos(ϕ)] .* field.amplitude
 
 export IdealRotatedTranslatedHomogeneousField
 mutable struct IdealRotatedTranslatedHomogeneousField{RT} <: AbstractMagneticField where {RT <: RotationPlane}
@@ -57,13 +57,13 @@ mutable struct IdealRotatedTranslatedHomogeneousField{RT} <: AbstractMagneticFie
 end
 
 export IdealXYRotatedTranslatedHomogeneousField
-IdealXYRotatedTranslatedHomogeneousField(amplitude::T) where T <: Number = IdealRotatedTranslatedHomogeneousField(XYRotationPlane())
+IdealXYRotatedTranslatedHomogeneousField() = IdealRotatedTranslatedHomogeneousField(XYRotationPlane())
 
 export IdealXZRotatedTranslatedHomogeneousField
-IdealXZRotatedTranslatedHomogeneousField(amplitude::T) where T <: Number = IdealRotatedTranslatedHomogeneousField(XZRotationPlane())
+IdealXZRotatedTranslatedHomogeneousField() = IdealRotatedTranslatedHomogeneousField(XZRotationPlane())
 
 export IdealYZRotatedTranslatedHomogeneousField
-IdealYZRotatedTranslatedHomogeneousField(amplitude::T) where T <: Number = IdealRotatedTranslatedHomogeneousField(YZRotationPlane())
+IdealYZRotatedTranslatedHomogeneousField() = IdealRotatedTranslatedHomogeneousField(YZRotationPlane())
 
 FieldStyle(::IdealRotatedTranslatedHomogeneousField) = HomogeneousField()
 FieldDefinitionStyle(::IdealRotatedTranslatedHomogeneousField) = MethodBasedFieldDefinition()
