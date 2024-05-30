@@ -130,6 +130,18 @@ function TranslationalDimensionalityStyle(::RotationalTranslationalMovement, fie
   return TranslationalDimensionalityStyle{ThreeDimensional}()
 end
 
+export RotationPlane, XYRotationPlane, XZRotationPlane, YZRotationPlane
+abstract type RotationPlane end
+struct XYRotationPlane <: RotationPlane end
+struct XZRotationPlane <: RotationPlane end
+struct YZRotationPlane <: RotationPlane end
+
+export Direction, XDirection, YDirection, ZDirection
+abstract type Direction end
+struct XDirection <: Direction end
+struct YDirection <: Direction end
+struct ZDirection <: Direction end
+
 # For code generation
 timeDependencyStylesCodeGeneration_ = [:TimeConstant, :TimeVarying]
 movementStylesCodeGeneration_ =
