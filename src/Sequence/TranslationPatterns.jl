@@ -15,6 +15,17 @@ struct NoTranslationPattern <: TranslationPattern end
 motionAtTime(::NoTranslationPattern, t::T) where {T <: Number} = 0u"mT"
 motionAtTime(::NoTranslationPattern, t::T) where {T <: AbstractVector} = fill(0u"mT", length(t))
 
+export StaticTranslationPattern
+"""
+Translational movement pattern describing a static movement.
+"""
+struct StaticTranslationPattern{T} <: TranslationPattern
+  translation::T
+end
+
+motionAtTime(trans::StaticTranslationPattern, t::T) where {T <: Number} = trans.translation
+motionAtTime(trans::StaticTranslationPattern, t::T) where {T <: AbstractVector} = fill(trans.translation, length(t))
+
 # TODO: This is only 1D. Other cases will be added when need arises
 
 export SinusoidalTranslationPattern
