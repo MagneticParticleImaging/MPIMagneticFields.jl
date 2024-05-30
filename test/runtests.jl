@@ -4,6 +4,7 @@ using Aqua
 using JuliaFormatter
 using LinearAlgebra
 using Waveforms
+using Unitful
 
 isCIRun =
   haskey(ENV, "GITHUB_ACTIONS") ||
@@ -28,7 +29,7 @@ isCIRun =
   include("Type.jl")
   include("Traits.jl")
   include("Common.jl")
-  include("Sequence.jl")
+  include("Sequence/Sequence.jl")
   include("Superposition.jl")
   include("CommonFields/CommonFields.jl")
   include("Experimental.jl")

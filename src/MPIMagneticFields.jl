@@ -5,6 +5,7 @@ using LinearAlgebra
 using StaticArrays
 using Unitful
 using Waveforms
+using Random
 
 export μ₀
 """
@@ -97,6 +98,7 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
         ) where {VT <: Number, T <: Number, PT <: AbstractVector{T}}
           return value_(field, t, r, $(arguments...); kwargs...)
         end
+
         function value(
           ::$fieldTimeDependencyStyle,
           ::$fieldMovementStyle,
@@ -109,6 +111,16 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
             r_ ∈ Iterators.product(r...)
           ]
         end
+
+        function value(
+          ::$fieldTimeDependencyStyle,
+          ::$fieldMovementStyle,
+          field::AbstractMagneticField,
+          $(parameters...);
+          kwargs...,
+        ) where {TT <: Number, VT <: AbstractVector{TT}, T <: Any, PT <: AbstractVector{T}}
+          return [value(field, t_, r, $(arguments...); kwargs...) for t_ ∈ t]
+        end
       end
     else
       @eval begin
@@ -119,8 +131,9 @@ for fieldTimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
           $(parameters...);
           kwargs...,
         ) where {T <: Number, PT <: AbstractVector{T}}
-        return value_(field, r, $(arguments...); kwargs...)
+          return value_(field, r, $(arguments...); kwargs...)
         end
+
         function value(
           ::$fieldTimeDependencyStyle,
           ::$fieldMovementStyle,

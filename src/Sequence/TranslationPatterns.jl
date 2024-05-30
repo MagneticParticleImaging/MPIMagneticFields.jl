@@ -72,7 +72,7 @@ Translational movement pattern describing a sawtooth-like movement.
 end
 
 function motionAtTime(trans::SawtoothTranslationPattern, t)
-  return trans.amplitude .* sawtooth.(2π .* trans.f .* t .+ trans.ϕ) .+ trans.offset
+  return trans.amplitude .* sawtoothwave.(2π .* trans.f .* t .+ trans.ϕ) .+ trans.offset
 end
 
 """
@@ -111,7 +111,7 @@ Translational movement pattern describing a triangle-like movement.
 end
 
 function motionAtTime(trans::TriangleTranslationPattern, t)
-  return trans.amplitude .* sawtooth.(2π .* trans.f .* t .+ trans.ϕ) .+ trans.offset
+  return trans.amplitude .* trianglewave.(2π .* trans.f .* t .+ trans.ϕ) .+ trans.offset
 end
 
 """

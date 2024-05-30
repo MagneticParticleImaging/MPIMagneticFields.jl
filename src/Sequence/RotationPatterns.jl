@@ -11,8 +11,8 @@ Rotational movement pattern describing a non-existing movement.
 """
 struct NoRotationPattern <: RotationPattern end
 
-motionAtTime(::NoRotationPattern, t::T) where {T <: Number} = 0
-motionAtTime(::NoRotationPattern, t::T) where {T <: AbstractVector} = zeros(T, length(t))
+motionAtTime(::NoRotationPattern, t::T) where {T <: Number} = zero(Float64)
+motionAtTime(::NoRotationPattern, t::T) where {T <: AbstractVector} = zeros(Float64, length(t))
 
 # TODO: This is only 1D. Other cases will be added when need arises
 
@@ -29,6 +29,26 @@ end
 
 motionAtTime(rot::StandardRotationPattern, t) = sawtoothwave.(upreferred.(t .* rot.ω .+ rot.ϕ)) .* π
 
+"""
+Frequency of the rotation pattern.
+"""
+frequency(rot::StandardRotationPattern) = rot.ω
+
+"""
+Phase of the rotation pattern.
+"""
+phase(rot::StandardRotationPattern) = rot.ϕ
+
+"""
+Amplitude of the rotation pattern.
+"""
+amplitude(rot::StandardRotationPattern) = nothing
+
+"""
+Offset of the rotation pattern.
+"""
+offset(rot::StandardRotationPattern) = nothing
+
 export NoisyRotationPattern
 """
 Rotational movement extending the [`StandardRotationPattern`](@ref) by a random deviation.
@@ -36,7 +56,7 @@ Rotational movement extending the [`StandardRotationPattern`](@ref) by a random 
 struct NoisyRotationPattern <: RotationPattern
   standardRotation::StandardRotationPattern
   noiseAmplitude::Real
-  seed::Float64
+  seed::Int64
 
   function NoisyRotationPattern(; ω, ϕ = 0.0u"rad", noiseAmplitude, seed = 0)
     return new(StandardRotationPattern(ω, ϕ), noiseAmplitude, seed)
@@ -48,6 +68,26 @@ function motionAtTime(rot::NoisyRotationPattern, t)
   return motionAtTime(rot.standardRotation, t) .+
          rot.noiseAmplitude .* randn(rng, Float64, length(t), rot.seed)
 end
+
+"""
+Frequency of the rotation pattern.
+"""
+frequency(rot::NoisyRotationPattern) = rot.standardRotation.ω
+
+"""
+Phase of the rotation pattern.
+"""
+phase(rot::NoisyRotationPattern) = rot.standardRotation.ϕ
+
+"""
+Amplitude of the rotation pattern.
+"""
+amplitude(rot::NoisyRotationPattern) = nothing
+
+"""
+Offset of the rotation pattern.
+"""
+offset(rot::NoisyRotationPattern) = nothing
 
 # @kwdef struct LaggingRotation <: RotationPattern
 #   ω::typeof(1.0u"rad/s") = 2π*u"rad/s"

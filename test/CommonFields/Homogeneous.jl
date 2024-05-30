@@ -113,9 +113,7 @@
     @test all(isapprox.(value(field, [1, 0, 0], π / 2, 2), [2, 0, 0], atol = 1e-10))
     @test all(isapprox.(value(field, [0.5, 0, 0], π / 2, 2), [2, 0, 0], atol = 1e-10))
   end
-
-
-
+  
   @testset "IdealXZRotatedTranslatedHomogeneousField" begin
     field = IdealXZRotatedTranslatedHomogeneousField()
 

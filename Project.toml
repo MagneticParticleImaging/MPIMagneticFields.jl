@@ -6,6 +6,7 @@ version = "0.0.7"
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 Waveforms = "cb13b1c6-351e-5134-b3ad-d6a530956a82"
@@ -15,6 +16,7 @@ Aqua = "0.8"
 DocStringExtensions = "0.8, 0.9"
 JuliaFormatter = "1.0"
 LinearAlgebra = "1"
+Random = "1"
 StaticArrays = "1.5"
 Test = "1"
 Unitful = "1.15"
@@ -26,7 +28,8 @@ Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 Waveforms = "cb13b1c6-351e-5134-b3ad-d6a530956a82"
 
 [targets]
-test = ["Aqua", "JuliaFormatter", "LinearAlgebra", "Test", "Waveforms"]
+test = ["Aqua", "JuliaFormatter", "LinearAlgebra", "Test", "Unitful", "Waveforms"]
