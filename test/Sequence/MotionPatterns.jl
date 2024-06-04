@@ -4,6 +4,8 @@
   @testset "RotationPatterns" begin
     @testset "NoRotationPattern" begin
       pattern = NoRotationPattern()
+
+      @test motionAtTime(pattern, t[1]) == 0
       @test all(motionAtTime(pattern, t) .== 0)
     end
 
@@ -11,8 +13,18 @@
       pattern = StandardRotationPattern(ω = 1.0u"rad/s", ϕ = 0.0u"rad")
       @test all(motionAtTime(pattern, t) .≈ range(0, 1, 10))
 
+      @test frequency(pattern) == 1.0u"rad/s"
+      @test phase(pattern) == 1.0u"rad"
+      @test isnothing(amplitude(pattern))
+      @test isnothing(offset(pattern))
+
       pattern = StandardRotationPattern(ω = 1.0u"rad/s", ϕ = 1.0u"rad")
       @test all(motionAtTime(pattern, t) .≈ range(1, 2, 10))
+
+      @test frequency(pattern) == 1.0u"rad/s"
+      @test phase(pattern) == 0.0u"rad"
+      @test isnothing(amplitude(pattern))
+      @test isnothing(offset(pattern))
     end
 
     @testset "StandardRotationPattern" begin
@@ -21,13 +33,27 @@
 
       pattern = NoisyRotationPattern(ω = 1.0u"rad/s", ϕ = 1.0u"rad", noiseAmplitude = 0.001)
       @test all(motionAtTime(pattern, t) .≈ range(1, 2, 10))
+
+      @test frequency(pattern) == 1.0u"rad/s"
+      @test phase(pattern) == 0.0u"rad"
+      @test isnothing(amplitude(pattern))
+      @test isnothing(offset(pattern))
     end
   end
 
   @testset "TranslationPatterns" begin
     @testset "NoTranslationPattern" begin
       pattern = NoTranslationPattern()
+
+      @test motionAtTime(pattern, t[1]) == 0u"mT"
       @test all(motionAtTime(pattern, t) .≈ 0u"mT")
+    end
+
+    @testset "StaticTranslationPattern" begin
+      pattern = StaticTranslationPattern([1, 0, 0]u"mT")
+      
+      @test motionAtTime(pattern, t[1]) == [1, 0, 0]u"mT"
+      @test all(motionAtTime(pattern, t) .≈ [1, 0, 0]u"mT")
     end
 
     @testset "SinusoidalTranslationPattern" begin

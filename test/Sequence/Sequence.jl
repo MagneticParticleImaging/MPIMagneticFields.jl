@@ -2,7 +2,9 @@
   include("MotionPatterns.jl")
 
   @testset "SequencedField" begin
-    field_ = IdealXYRotatedTranslatedFFL(1)
+    t = range(0, 1, 10)u"s"
+
+    field_ = IdealXYRotatedTranslatedFFL(1u"mT")
     sequence_ = RotationalTranslationalSequence(
       1u"s",
       StandardRotationPattern(ω = 1.0u"rad/s", ϕ = 0.0u"rad"),
@@ -21,10 +23,24 @@
 
     @test RotationalDimensionalityStyle(sequencedField) isa RotationalDimensionalityStyle{ZeroDimensional}
     @test TranslationalDimensionalityStyle(sequencedField) isa TranslationalDimensionalityStyle{ZeroDimensional}
+
+    @test all(value(sequencedField, t, [0, 0, 0]) .≈ value(field_, [0, 0, 0], sawtoothwave.(upreferred.(t .* 1.0u"rad/s" .+ 0.0u"rad")) .* π, 1u"mT" .* sin.(2π * 1u"Hz" * t) .+ 1u"mT"))
   end
 
   @testset "Sequences" begin
     t = range(0, 1, 10)u"s"
+
+    @testset "SequenceDefaults" begin
+      struct SequenceDefaultsTestSequence <: MotionPatternSequence end
+
+      seq = SequenceDefaultsTestSequence()
+      field = IdealHomogeneousField(1)
+
+      @test_throws ErrorException fieldOverTime(seq)
+      @test_throws ErrorException totalSequenceTime(seq)
+      @test_throws ErrorException rotation(seq)
+      @test_throws ErrorException translation(seq)
+    end
 
     @testset "RotationalSequence" begin
       seq = RotationalSequence(1u"s", StandardRotationPattern(ω = 1.0u"rad/s", ϕ = 0.0u"rad"))

@@ -142,7 +142,6 @@
 
   @testset "IdealYZRotatedTranslatedHomogeneousField" begin
     field = IdealYZRotatedTranslatedHomogeneousField()
-
     @test FieldStyle(field) isa HomogeneousField
     @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(field) isa TimeConstant
@@ -165,4 +164,72 @@
     @test all(isapprox.(value(field, [1, 0, 0], π / 2, 2), [0, 2, 0], atol = 1e-10))
     @test all(isapprox.(value(field, [0.5, 0, 0], π / 2, 2), [0, 2, 0], atol = 1e-10))
   end
+
+  @testset "OneDimensionalVariableTranslationHomogeneousField: XDirection" begin
+    field = OneDimensionalVariableTranslationHomogeneousField(XDirection())
+
+    @test FieldStyle(field) isa HomogeneousField
+    @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
+    @test FieldTimeDependencyStyle(field) isa TimeVarying
+    @test isTimeVarying(field) == true
+    @test FieldMovementStyle(field) isa TranslationalMovement
+    @test isRotatable(field) == false
+    @test isTranslatable(field) == true
+    @test RotationalDimensionalityStyle(field) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(field) isa TranslationalDimensionalityStyle{OneDimensional}
+
+    @test all(value(field, 0, [1, 0, 0], 1) .≈ [1, 0, 0])
+    @test all(value(field, 0, [0.5, 0, 0], 1) .≈ [1, 0, 0])
+
+    @test all(value(field, 0, [1, 0, 0], 0.5) .≈ [0.5, 0, 0])
+    @test all(value(field, 0, [0.5, 0, 0], 0.5) .≈ [0.5, 0, 0])
+
+    @test all(value(field, 0, [0.5, 0, 0], 1:3) .≈ [[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+  end
+
+  @testset "OneDimensionalVariableTranslationHomogeneousField: YDirection" begin
+    field = OneDimensionalVariableTranslationHomogeneousField(YDirection())
+
+    @test FieldStyle(field) isa HomogeneousField
+    @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
+    @test FieldTimeDependencyStyle(field) isa TimeVarying
+    @test isTimeVarying(field) == true
+    @test FieldMovementStyle(field) isa TranslationalMovement
+    @test isRotatable(field) == false
+    @test isTranslatable(field) == true
+    @test RotationalDimensionalityStyle(field) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(field) isa TranslationalDimensionalityStyle{OneDimensional}
+
+    @test all(value(field, 0, [1, 0, 0], 1) .≈ [0, 1, 0])
+    @test all(value(field, 0, [0.5, 0, 0], 1) .≈ [0, 1, 0])
+
+    @test all(value(field, 0, [1, 0, 0], 0.5) .≈ [0, 0.5, 0])
+    @test all(value(field, 0, [0.5, 0, 0], 0.5) .≈ [0, 0.5, 0])
+
+    @test all(value(field, 0, [0.5, 0, 0], 1:3) .≈ [[0, 1, 0], [0, 2, 0], [0, 3, 0]])
+  end
+
+  @testset "OneDimensionalVariableTranslationHomogeneousField: ZDirection" begin
+    field = OneDimensionalVariableTranslationHomogeneousField(ZDirection())
+
+    @test FieldStyle(field) isa HomogeneousField
+    @test FieldDefinitionStyle(field) isa MethodBasedFieldDefinition
+    @test FieldTimeDependencyStyle(field) isa TimeVarying
+    @test isTimeVarying(field) == true
+    @test FieldMovementStyle(field) isa TranslationalMovement
+    @test isRotatable(field) == false
+    @test isTranslatable(field) == true
+    @test RotationalDimensionalityStyle(field) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(field) isa TranslationalDimensionalityStyle{OneDimensional}
+
+    @test all(value(field, 0, [1, 0, 0], 1) .≈ [0, 0, 1])
+    @test all(value(field, 0, [0.5, 0, 0], 1) .≈ [0, 0, 1])
+
+    @test all(value(field, 0, [1, 0, 0], 0.5) .≈ [0, 0, 0.5])
+    @test all(value(field, 0, [0.5, 0, 0], 0.5) .≈ [0, 0, 0.5])
+
+    @test all(value(field, 0, [0.5, 0, 0], 1:3) .≈ [[0, 0, 1], [0, 0, 2], [0, 0, 3]])
+  end
 end
+
+

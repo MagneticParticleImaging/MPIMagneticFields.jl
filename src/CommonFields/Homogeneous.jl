@@ -31,11 +31,14 @@ FieldStyle(::OneDimensionalVariableTranslationHomogeneousField) = HomogeneousFie
 FieldDefinitionStyle(::OneDimensionalVariableTranslationHomogeneousField) = MethodBasedFieldDefinition()
 FieldTimeDependencyStyle(::OneDimensionalVariableTranslationHomogeneousField) = TimeVarying()
 FieldMovementStyle(::OneDimensionalVariableTranslationHomogeneousField) = TranslationalMovement()
+RotationalDimensionalityStyle(::OneDimensionalVariableTranslationHomogeneousField) = RotationalDimensionalityStyle{ZeroDimensional}()
+TranslationalDimensionalityStyle(::OneDimensionalVariableTranslationHomogeneousField) = TranslationalDimensionalityStyle{OneDimensional}()
 
 value_(field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = value_(field.direction, field, t, r, δ)
-value_(direction::XDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = [δ, zero(eltype(δ)), zero(eltype(δ))]
-value_(direction::YDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = [zero(eltype(δ)), δ, zero(eltype(δ))]
-value_(direction::ZDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = [zero(eltype(δ)), zero(eltype(δ)), δ]
+value_(field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ::T) where {T <: AbstractVector} = [value_(field, t, r, δ_) for δ_ in δ]
+value_(direction::XDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = SVector(δ, zero(eltype(δ)), zero(eltype(δ)))
+value_(direction::YDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = SVector(zero(eltype(δ)), δ, zero(eltype(δ)))
+value_(direction::ZDirection, field::OneDimensionalVariableTranslationHomogeneousField, t, r, δ) = SVector(zero(eltype(δ)), zero(eltype(δ)), δ)
 
 export IdealRotatedHomogeneousField
 mutable struct IdealRotatedHomogeneousField{RT, T} <: AbstractMagneticField where {RT <: RotationPlane, T <: Number}
