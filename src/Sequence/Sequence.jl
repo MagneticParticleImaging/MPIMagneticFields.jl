@@ -50,7 +50,7 @@ Convert a sequence template to a regular sequence
 """
 sequence(template::SequenceTemplate) = error("$(typeof(template)) must implement `sequence`.")
 
-Base.convert(::Type{Sequence}, template::SequenceTemplate) = sequence(template)
+Base.convert(::Type{<: Sequence}, template::SequenceTemplate) = sequence(template)
 
 export RotationalSequence
 struct RotationalSequence{TT, RPT} <: MotionPatternSequence where {TT <: Unitful.Time, RPT <: RotationPattern}

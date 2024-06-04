@@ -39,5 +39,5 @@ function value_(field::IdealXYRotatedTranslatedFFL, r, ϕ, δ)
   shift = SVector{3}(sincos_[1], sincos_[2], 0) .* δ
   return mat * r .+ shift
 end
-value_(field::IdealXYRotatedTranslatedFFL, r, ϕ::T, δ) where {T <: AbstractVector} = [value_(field, r, ϕ_) for ϕ_ in ϕ]
+value_(field::IdealXYRotatedTranslatedFFL, r, ϕ::T, δ) where {T <: AbstractVector} = [value_(field, r, ϕ_, δ) for ϕ_ in ϕ]
 value_(field::IdealXYRotatedTranslatedFFL, r, ϕ::T, δ::V) where {T <: AbstractVector, V <: AbstractVector} = [value_(field, r, ϕ_, δ_) for (ϕ_, δ_) in zip(ϕ, δ)]

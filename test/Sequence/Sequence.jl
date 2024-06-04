@@ -27,6 +27,13 @@
     @test all(value(sequencedField, t, [0, 0, 0]) .≈ value(field_, [0, 0, 0], sawtoothwave.(upreferred.(t .* 1.0u"rad/s" .+ 0.0u"rad")) .* π, 1u"mT" .* sin.(2π * 1u"Hz" * t) .+ 1u"mT"))
   end
 
+  @testset "SequenceTemplate" begin
+    struct TestSequenceTemplate <: SequenceTemplate end
+    struct SequenceTemplateTestSequence <: Sequence end
+    @test_throws ErrorException sequence(TestSequenceTemplate())
+    #@test_throws ErrorException convert(Type{SequenceTemplateTestSequence}, TestSequenceTemplate())
+  end
+
   @testset "Sequences" begin
     t = range(0, 1, 10)u"s"
 
