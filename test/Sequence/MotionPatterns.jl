@@ -14,7 +14,7 @@
       @test all(motionAtTime(pattern, t) .≈ range(0, 1, 10))
 
       @test frequency(pattern) == 1.0u"rad/s"
-      @test phase(pattern) == 1.0u"rad"
+      @test phase(pattern) == 0.0u"rad"
       @test isnothing(amplitude(pattern))
       @test isnothing(offset(pattern))
 
@@ -22,7 +22,7 @@
       @test all(motionAtTime(pattern, t) .≈ range(1, 2, 10))
 
       @test frequency(pattern) == 1.0u"rad/s"
-      @test phase(pattern) == 0.0u"rad"
+      @test phase(pattern) == 1.0u"rad"
       @test isnothing(amplitude(pattern))
       @test isnothing(offset(pattern))
     end
@@ -31,11 +31,16 @@
       pattern = NoisyRotationPattern(ω = 1.0u"rad/s", ϕ = 0.0u"rad", noiseAmplitude = 0.001)
       @test all(motionAtTime(pattern, t) .≈ range(0, 1, 10))
 
+      @test frequency(pattern) == 1.0u"rad/s"
+      @test phase(pattern) == 0.0u"rad"
+      @test isnothing(amplitude(pattern))
+      @test isnothing(offset(pattern))
+
       pattern = NoisyRotationPattern(ω = 1.0u"rad/s", ϕ = 1.0u"rad", noiseAmplitude = 0.001)
       @test all(motionAtTime(pattern, t) .≈ range(1, 2, 10))
 
       @test frequency(pattern) == 1.0u"rad/s"
-      @test phase(pattern) == 0.0u"rad"
+      @test phase(pattern) == 1.0u"rad"
       @test isnothing(amplitude(pattern))
       @test isnothing(offset(pattern))
     end
@@ -51,9 +56,9 @@
 
     @testset "StaticTranslationPattern" begin
       pattern = StaticTranslationPattern([1, 0, 0]u"mT")
-      
+
       @test motionAtTime(pattern, t[1]) == [1, 0, 0]u"mT"
-      @test all(motionAtTime(pattern, t) .≈ [1, 0, 0]u"mT")
+      @test all([all(val .≈ [1, 0, 0]u"mT") for val in motionAtTime(pattern, t)])
     end
 
     @testset "SinusoidalTranslationPattern" begin

@@ -34,9 +34,9 @@
       struct SequenceDefaultsTestSequence <: MotionPatternSequence end
 
       seq = SequenceDefaultsTestSequence()
-      field = IdealHomogeneousField(1)
+      field = IdealHomogeneousField([1, 0, 0])
 
-      @test_throws ErrorException fieldOverTime(seq)
+      @test_throws ErrorException fieldOverTime(seq, field, 0, [0, 0, 0])
       @test_throws ErrorException totalSequenceTime(seq)
       @test_throws ErrorException rotation(seq)
       @test_throws ErrorException translation(seq)
