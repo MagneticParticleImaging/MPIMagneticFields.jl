@@ -1,6 +1,11 @@
 @testset "MotionPatterns" begin
   t = range(0, 1, 10)u"s"
 
+  @testset "MotionPattern Defaults" begin
+    struct TestMotionPattern <: MotionPattern end
+    @test_throws motionAtTime(TestMotionPattern(), 1)
+  end
+
   @testset "RotationPatterns" begin
     @testset "NoRotationPattern" begin
       pattern = NoRotationPattern()
