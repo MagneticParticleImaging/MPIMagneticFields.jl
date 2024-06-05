@@ -3,7 +3,7 @@
 
   @testset "MotionPattern Defaults" begin
     struct TestMotionPattern <: MotionPattern end
-    @test_throws motionAtTime(TestMotionPattern(), 1)
+    @test_throws ErrorException motionAtTime(TestMotionPattern(), t[1])
   end
 
   @testset "RotationPatterns" begin
