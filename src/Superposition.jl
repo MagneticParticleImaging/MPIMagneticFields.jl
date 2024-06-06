@@ -216,7 +216,7 @@ for fieldATimeDependencyStyle ∈ timeDependencyStylesCodeGeneration_
                   funcBodyA = Expr(:call, :value, :(field.fieldA), argumentsA...)
                   funcBodyB = Expr(:call, :value, :(field.fieldB), argumentsB...)
 
-                  funcBodyExpr = Expr(:return, Expr(:call, :.+, funcBodyA, funcBodyB))
+                  funcBodyExpr = Expr(:return, Expr(:call, :(.+), funcBodyA, funcBodyB))
                 end
 
                 @eval begin

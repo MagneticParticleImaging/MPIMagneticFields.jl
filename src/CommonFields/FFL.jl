@@ -15,6 +15,7 @@ function value_(field::IdealXYRotatedFFL, r, ϕ)
   mat = SMatrix{3, 3}(1/2 .- 1/2 .* sincos_[2], -1/2 .* sincos_[1], 0, -1/2 .* sincos_[1], 1/2 .+ 1/2 .* sincos_[2], 0, 0, 0, 1) .* field.gradient
   return mat * r
 end
+value_(field::IdealXYRotatedFFL, r, ϕ::T) where {T <: AbstractVector} = [value_(field, r, ϕ_) for ϕ_ in ϕ]
 
 export IdealXYRotatedTranslatedFFL
 mutable struct IdealXYRotatedTranslatedFFL{GT} <: AbstractMagneticField where {GT <: Number}
@@ -38,3 +39,5 @@ function value_(field::IdealXYRotatedTranslatedFFL, r, ϕ, δ)
   shift = SVector{3}(sincos_[1], sincos_[2], 0) .* δ
   return mat * r .+ shift
 end
+value_(field::IdealXYRotatedTranslatedFFL, r, ϕ::T, δ) where {T <: AbstractVector} = [value_(field, r, ϕ_, δ) for ϕ_ in ϕ]
+value_(field::IdealXYRotatedTranslatedFFL, r, ϕ::T, δ::V) where {T <: AbstractVector, V <: AbstractVector} = [value_(field, r, ϕ_, δ_) for (ϕ_, δ_) in zip(ϕ, δ)]

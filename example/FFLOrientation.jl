@@ -1,7 +1,7 @@
 using MPIMagneticFields
 using PyPlot
 
-field = IdealXYFFL(5.0)
+field = IdealXYRotatedFFL(5.0)
 
 for angle ∈ 0:(pi / 10):(2pi)
   imshow([
