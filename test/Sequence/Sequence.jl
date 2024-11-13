@@ -41,6 +41,7 @@
     @test FieldStyle(limitedSequencedField) isa HomogeneousField
     @test FieldDefinitionStyle(limitedSequencedField) isa MethodBasedFieldDefinition
     @test FieldTimeDependencyStyle(limitedSequencedField) isa TimeVarying
+    @test GradientFieldStyle(limitedSequencedField) isa NoGradientField
     @test FieldMovementStyle(limitedSequencedField) isa SequencedMovement
 
     @test isRotatable(limitedSequencedField) == false
@@ -49,7 +50,13 @@
     @test RotationalDimensionalityStyle(limitedSequencedField) isa RotationalDimensionalityStyle{ZeroDimensional}
     @test TranslationalDimensionalityStyle(limitedSequencedField) isa TranslationalDimensionalityStyle{ZeroDimensional}
 
+    # Tests the non-vector path
     values_ = value(limitedSequencedField, t, [0, 0, 0])
+    @test all([all(val_ .>= -30u"mT") for val_ ∈ values_])
+    @test all([all(val_ .<= 20u"mT") for val_ ∈ values_])
+
+    # Tests the vector path
+    values_ = MPIMagneticFields.value_(limitedSequencedField, t, [0, 0, 0])
     @test all([all(val_ .>= -30u"mT") for val_ ∈ values_])
     @test all([all(val_ .<= 20u"mT") for val_ ∈ values_])
   end
