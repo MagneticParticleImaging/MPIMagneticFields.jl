@@ -27,6 +27,40 @@
     @test all(value(sequencedField, t, [0, 0, 0]) .≈ value(field_, [0, 0, 0], sawtoothwave.(upreferred.(t .* 1.0u"rad/s" .+ 0.0u"rad")) .* π, 1u"mT" .* sin.(2π * 1u"Hz" * t) .+ 1u"mT"))
   end
 
+  @testset "LimitedSequencedField" begin
+    t = range(0, 1, 100)u"s"
+
+    field_ = OneDimensionalVariableTranslationHomogeneousField(XDirection())
+    sequence_ = TranslationalSequence(
+      1u"s",
+      SinusoidalTranslationPattern(f = 10u"Hz", amplitude = 50u"mT", offset = 0u"mT")
+    )
+    sequencedField = SequencedField(field_, sequence_)
+    limitedSequencedField = LimitedSequencedField(sequencedField, NTuple{3}([-30u"mT", -30u"mT", -30u"mT"]), NTuple{3}([20u"mT", 20u"mT", 20u"mT"]))
+
+    @test FieldStyle(limitedSequencedField) isa HomogeneousField
+    @test FieldDefinitionStyle(limitedSequencedField) isa MethodBasedFieldDefinition
+    @test FieldTimeDependencyStyle(limitedSequencedField) isa TimeVarying
+    @test GradientFieldStyle(limitedSequencedField) isa NoGradientField
+    @test FieldMovementStyle(limitedSequencedField) isa SequencedMovement
+
+    @test isRotatable(limitedSequencedField) == false
+    @test isTranslatable(limitedSequencedField) == false
+
+    @test RotationalDimensionalityStyle(limitedSequencedField) isa RotationalDimensionalityStyle{ZeroDimensional}
+    @test TranslationalDimensionalityStyle(limitedSequencedField) isa TranslationalDimensionalityStyle{ZeroDimensional}
+
+    # Tests the non-vector path
+    values_ = value(limitedSequencedField, t, [0, 0, 0])
+    @test all([all(val_ .>= -30u"mT") for val_ ∈ values_])
+    @test all([all(val_ .<= 20u"mT") for val_ ∈ values_])
+
+    # Tests the vector path
+    values_ = MPIMagneticFields.value_(limitedSequencedField, t, [0, 0, 0])
+    @test all([all(val_ .>= -30u"mT") for val_ ∈ values_])
+    @test all([all(val_ .<= 20u"mT") for val_ ∈ values_])
+  end
+
   @testset "SequenceTemplate" begin
     struct TestSequenceTemplate <: SequenceTemplate end
     struct SequenceTemplateTestSequence <: Sequence end

@@ -32,3 +32,5 @@ RotationalDimensionalityStyle(field::SequencedField) = RotationalDimensionalityS
 TranslationalDimensionalityStyle(field::SequencedField) = TranslationalDimensionalityStyle{ZeroDimensional}() # TranslationalDimensionalityStyle(field.field)
 
 value_(field::SequencedField, t, r) = fieldOverTime(field.sequence, field.field, t, r)
+
+include("LimitedSequencedField.jl")
