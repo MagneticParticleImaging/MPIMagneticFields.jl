@@ -1,10 +1,10 @@
 export FieldStyle, GradientField, HomogeneousField, ExcitationField, MixedField, OtherField
 abstract type FieldStyle end
-struct GradientField <: FieldStyle end
-struct HomogeneousField <: FieldStyle end
-struct ExcitationField <: FieldStyle end
-struct MixedField <: FieldStyle end
-struct OtherField <: FieldStyle end
+struct GradientFieldStyle <: FieldStyle end
+struct HomogeneousFieldStyle <: FieldStyle end
+struct ExcitationFieldStyle <: FieldStyle end
+struct MixedFieldStyle <: FieldStyle end
+struct OtherFieldStyle <: FieldStyle end
 
 export FieldStyle
 FieldStyle(::AbstractMagneticField)::FieldStyle = OtherField()
