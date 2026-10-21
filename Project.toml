@@ -13,7 +13,7 @@ Waveforms = "cb13b1c6-351e-5134-b3ad-d6a530956a82"
 
 [compat]
 Aqua = "0.8"
-DocStringExtensions = "0.8, 0.9"
+DocStringExtensions = "0.8, 0.9, 0.10"
 JuliaFormatter = "1.0"
 LinearAlgebra = "1"
 Random = "1"
